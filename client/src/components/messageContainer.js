@@ -64,9 +64,16 @@ function MessageContainer() {
         <>
           <div className={"message-container"}>
             <div ref={messagesRef} id={"messages"}>
-                {messages.map((message, index) => (
-                    <p style={{ margin:0 }} key={index}>{message.fromMe ? message.message : message.message}</p>
-                ))}
+            {messages.map((message, index) => (
+              <p style={{ margin: 0 }} key={index}>
+                {message.fromMe ? (
+                  <strong>{"Me"}:</strong>
+                ) : (
+                  <strong>{message.message.substring(0, message.message.indexOf(':') + 1)}</strong>
+                )}
+                {message.message.substring(message.message.indexOf(':') + 1)}
+              </p>
+            ))}
             </div>
 
             <MessageInput onSubmit={handleSendMessage} />

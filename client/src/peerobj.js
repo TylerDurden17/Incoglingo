@@ -1,9 +1,9 @@
 import Peer from 'peerjs'
 
 const newPeer = new Peer(undefined, {
-  host: "localhost",
-  port: 9000,
-  path: "/myapp"
+  host: "0.peerjs.com",
+  port: 443,
+  path: "/"
 });
 
 export default newPeer;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import newPeer from '../peerobj';
 import {socket} from '../socket';
-import { BsMic, BsMicMute } from "react-icons/bs";
+import { MdMic, MdMicOff, MdCallEnd } from "react-icons/md";
 
 function CallHandling(props) {
     const videoRefs = useRef([]);
@@ -17,7 +17,6 @@ function CallHandling(props) {
         Object.values(streams).forEach((stream, index) => {
             videoRefs.current[index].srcObject = stream.stream;
         });
-        console.log(streams);
             
     }, [streams]);
 
@@ -55,10 +54,9 @@ function CallHandling(props) {
         };
     }, []);
 
-    useEffect(()=>{
+    useEffect(() => {
             // set up listener to answer call
             newPeer.on('call', call => {
-                console.log(call);
                 setAnswerCall(call); //necessary line without it video element wouldn't disappear 
                 call.answer(myStream);
                 call.on('stream', incomingStream => {
@@ -70,6 +68,12 @@ function CallHandling(props) {
                     if(call.peer===userId){
                         call.close();
                     }
+                });
+                socket.on('disconnect', () => {
+                    call.close();
+                    setStreams({});
+                    setUsers({});
+                    window.location.href = `/`;
                 });
                 // Return a cleanup function to stop all tracks and release resources used by the stream
                 return () => {
@@ -86,22 +90,27 @@ function CallHandling(props) {
             alert('Call with user already in progress');
             return;
         }
-            const options = {metadata: props.name}
-            setCall(newPeer.call(userId, myStream, options));
-            // to remove the call button after call was made
-            setUsers(prevUsers => ({
-                ...prevUsers,
-                [userId]: {
-                  ...prevUsers[userId], // copy the existing user object
-                  status: true // update the status field
-                }
-            }));              
+
+        const options = {metadata: props.name}
+        setCall(newPeer.call(userId, myStream, options));
+        // to remove the call button after call was made
+        setUsers(prevUsers => ({
+            ...prevUsers,
+            [userId]: {
+                ...prevUsers[userId], // copy the existing user object
+                status: true // update the status field
+            }
+        }));              
     }
 
     function handleMuteClick() {
         const newIsMuted = !isMuted; // Update isMuted first
         setIsMuted(newIsMuted);
         myStream.getAudioTracks()[0].enabled = isMuted;
+    }
+
+    function handleEndClick() {
+        socket.disconnect();
     }
 
     useEffect(() => {
@@ -122,7 +131,12 @@ function CallHandling(props) {
                     call.close();
                 }
             });
-
+            socket.on('disconnect', () => {
+                call.close();
+                setStreams({});
+                setUsers({});
+                window.location.href = `/`;
+            });
             call.on('close', () => {
                 setStreams((prevStreams) => {
                     const newStreams = { ...prevStreams };
@@ -156,7 +170,7 @@ function CallHandling(props) {
                             
                             <li className="video-item" key={stream.stream.id}>
                                 <audio key={stream.stream.id} ref={el => videoRefs.current[index] = el} autoPlay></audio>
-                                <p >{stream.name} 🔊</p>
+                                <p>{stream.name} 🔊</p> 
                             </li>
                             
                         ))}
@@ -165,12 +179,17 @@ function CallHandling(props) {
                     <div className="button-container">
                         {Object.keys(users).map((userId) => (
                             users[userId].status === false && (
-                            <button id={"call-button"} key={userId} onClick={() => handleClick(userId)}>Call {users[userId].name}</button>
+                                <button id={"call-button"} key={userId} onClick={() => handleClick(userId)}>Call {users[userId].name}</button>
                             )
                         ))}
-                            <button id={"muteButton"} onClick={() => handleMuteClick()}>
-                                {isMuted ? <BsMicMute /> : <BsMic />}
-                            </button>
+
+                        <button id={"muteButton"} onClick={() => handleMuteClick()} style={{
+                            backgroundColor: isMuted ? '#ea4335' : '#6495ED'
+                        }}>
+                            {isMuted ? <MdMicOff /> : <MdMic />}
+                        </button>
+                        <button id={"endCall"} onClick={() => handleEndClick()}><MdCallEnd/></button>
+
                     </div>
                 </div>
             </>

@@ -48,10 +48,22 @@
 }
 
 #muteButton {
-  background-color: #ea4335; /* Green background */
   border: none; /* Remove border */
   color: white; /* White text color */
   padding: 10px 20px; /* Add some padding */
+  text-align: center; /* Center text */
+  text-decoration: none; /* Remove underline */
+  display: inline-block; /* Make it inline */
+  font-size: 1.5rem; /* Set font size */
+  cursor: pointer; /* Change cursor to pointer */
+  border-radius: 15px; /* Add some border radius */
+}
+
+#endCall {
+  background: #ea4335; /* Green background */
+  border: none; /* Remove border */
+  padding: 10px 20px; /* Add some padding */
+  color: white; /* White text color */
   text-align: center; /* Center text */
   text-decoration: none; /* Remove underline */
   display: inline-block; /* Make it inline */
@@ -70,9 +82,17 @@
   font-size: 16px;
   font-weight: bold;
 }
+
+
 /* Desktop styles */
 @media screen and (min-width: 768px) {
 
+  #call-handling {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
   #message-input {
     flex-grow: 1;
     padding: 0.5rem;
