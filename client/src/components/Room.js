@@ -8,7 +8,7 @@ import VideoGrid from "./videoGrid";
 function Room() {
   
   const { roomId } = useParams();
-  const [name, setName] = useState(null)
+  const name = window.prompt('What is your name?')
 
   useEffect(() => {
     const handleDisconnect = () => {
@@ -21,10 +21,8 @@ function Room() {
     };
 
     newPeer.on("open", (id) => {
-      const name = window.prompt('What is your name?')
       socket.emit('join-room', roomId, id, name);
       console.log('room joined');
-      setName(name)
     });
 
     newPeer.on('disconnected', handleDisconnect);

@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import App from './components/App';
 import { BrowserRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css'
+import ReactGA from 'react-ga4';
+ReactGA.initialize('G-JT0R0WW69E');
  
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
