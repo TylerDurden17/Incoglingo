@@ -35,7 +35,7 @@ function Room() {
   return (
     <>
       <header>
-        <h4 id="groupName">TalkX</h4>
+        <h4 id="groupName">Incoglingo</h4>
       </header>
 
       <article id="bothchats">
