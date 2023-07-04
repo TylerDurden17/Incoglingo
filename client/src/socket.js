@@ -5,6 +5,6 @@ import io from 'socket.io-client';
 // });
 
 
-export const socket = io('https://quickest-wind-production.up.railway.app', {
+export const socket = io('https://incoglingo.onrender.com/', {
   transports : ['websocket', 'polling']
 });
