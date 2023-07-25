@@ -5,10 +5,14 @@ import {socket} from '../socket'
 import MessageContainer from "./messageContainer";
 import newPeer from "../peerobj";
 import VideoGrid from "./videoGrid";
+
 function Room() {
   
   const { roomId } = useParams();
-  const name = window.prompt('What is your name?')
+
+  while(!naam){
+    var naam = window.prompt('What is your name?')
+  };
 
   useEffect(() => {
     const handleDisconnect = () => {
@@ -17,20 +21,22 @@ function Room() {
       // - Prompt the user to reconnect to the server
       // - Attempt to reconnect to the server automatically
       // - Clean up any resources associated with the peer
+      newPeer.destroy();
       newPeer.reconnect();
     };
 
     newPeer.on("open", (id) => {
-      socket.emit('join-room', roomId, id, name);
-      console.log('room joined');
+        socket.emit('join-room', roomId, id, naam);
+        console.log('room joined with name:', naam);
     });
 
     newPeer.on('disconnected', handleDisconnect);
 
     return () => {
       newPeer.off('disconnected', handleDisconnect);
+      newPeer.destroy();
     };
-  }, [roomId]);
+  }, [roomId, naam]);
 
   return (
     <>
@@ -41,7 +47,7 @@ function Room() {
       <article id="bothchats">
 
         <div id="inner-audio-chat">
-            <VideoGrid name={name} />
+            <VideoGrid naam={naam} />
         </div>
 
         <div id="texting">

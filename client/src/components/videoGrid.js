@@ -13,7 +13,7 @@ function VideoGrid(props){
   
     return (
       <>
-        <CallHandling name={props.name}/>
+        <CallHandling naam={props.naam}/>
       </>
     );
 }
