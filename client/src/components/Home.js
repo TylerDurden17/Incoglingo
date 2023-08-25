@@ -1,6 +1,6 @@
 import React from "react";
-//changes made by tejas pandey
 import {Button} from 'react-bootstrap';
+import Topic from "./topic";
 
 function Home() {
   //const navigate = useNavigate();
@@ -29,6 +29,9 @@ function Home() {
               </Button>
             </div>
           </article>
+          <div style={{border:'1px solid #555', borderRadius:'16px', padding:'10px', marginTop:'4%'}}>
+            <Topic/>
+          </div>
         </div>
       </main>
     </div>

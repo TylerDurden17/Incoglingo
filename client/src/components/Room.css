@@ -155,6 +155,13 @@
     overflow-y: auto;
     max-height: 500px;
   }
+
+
+.ModalToDisplayTopic {
+  position: fixed;
+  top: 55px; /* Adjust this value to add the desired top margin */
+  left: 20px;
+}
 }
 
 /* Mobile styles */
@@ -239,6 +246,12 @@
     height: 6rem;
     margin: 8px;
   }
+
+  .ModalToDisplayTopic {
+    position: relative;
+    top: 10px; /* Adjust this value to add the desired top margin */
+    left: 10px;
+  }
 }
 
 #messageInputContainer {
@@ -275,10 +288,13 @@
   background-color: #ccc;
   cursor: not-allowed;
 }
-
+/* 
 .modalContent{
   display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally *//*
+  align-items: center; /* Center vertically *//*
   height: 100%;
-}
+} 
+*/
+
+/* Topic.css */
