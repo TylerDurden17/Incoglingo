@@ -68,8 +68,7 @@ function Room() {
     setShowModal(!showModal);
   };
 
-  // const naam = window.prompt('What is your name?');
-  const naam = 'sd'
+  const naam = window.prompt('What is your name?');
 
   useEffect(() => {
     const handleDisconnect = () => {
