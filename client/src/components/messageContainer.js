@@ -1,8 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
-import {socket} from "../socket";
 import MessageInput from "./MessageInput";
 
-function MessageContainer() {
+function MessageContainer(props) {
     const [messages, setMessages] = useState([]);
     const messagesRef = useRef(null);
 
@@ -12,13 +11,13 @@ function MessageContainer() {
     
     useEffect(()=> {
         
-        socket.on('chat-message', handleChatMessage);
+        props.socket.on('chat-message', handleChatMessage);
 
-        socket.on('user-connected', (userId, name) => {
+        props.socket.on('user-connected', (userId, name) => {
             handleChatMessage({ type: 'user-connected', name });
         })
 
-        socket.on('user-disconnected', (userId, name) => {
+        props.socket.on('user-disconnected', (userId, name) => {
             handleChatMessage({ type: 'user-disconnected', name });
         });
         
@@ -26,9 +25,9 @@ function MessageContainer() {
         // or re-rendered, the event listener will still be active and may continue to
         // consume memory and CPU resources, even if it's no longer needed.
         return () => {
-            socket.off('chat-message', handleChatMessage);
-            socket.off('user-disconnected');
-            socket.off('user-connected');
+            props.socket.off('chat-message', handleChatMessage);
+            props.socket.off('user-disconnected');
+            props.socket.off('user-connected');
           }
     }, [])
 
@@ -57,7 +56,7 @@ function MessageContainer() {
         { message: "Me: " + message, fromMe: true },
         ]);
 
-        socket.emit('send-chat-message', message);
+        props.socket.emit('send-chat-message', message);
     };
 
     return(

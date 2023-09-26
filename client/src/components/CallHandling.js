@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import newPeer from '../peerobj';
-import {socket} from '../socket';
+import { useNavigate } from 'react-router-dom';
 import Modal from "react-modal";
 import { MdMic, MdMicOff, MdCallEnd } from "react-icons/md";
 
 function CallHandling(props) {
+    const navigate = useNavigate();
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const videoRefs = useRef([]);
     const [call, setCall] = useState(null);
@@ -47,14 +47,14 @@ function CallHandling(props) {
             localStorage.setItem('microphonePermission', false);
         });
 
-        socket.on('user-connected', (userId, name) => {
+        props.socket.on('user-connected', (userId, name) => {
             // The square brackets around userId indicate that its value is a dynamic property name.
             // This syntax is called computed property names and it allows you to dynamically set object property names based on the value of a variable.
             // the purpose of status is to remove the call button when a call has been made
             setUsers(prevUsers => ({ ...prevUsers, [userId]: {name: name, status: false } }));
         });
 
-        socket.on('user-disconnected', (userId) => {
+        props.socket.on('user-disconnected', (userId) => {
             setUsers((prevUsers) => {
                 const newUsers = { ...prevUsers };
                 delete newUsers[userId];
@@ -63,18 +63,18 @@ function CallHandling(props) {
         });
 
         return () => {
-            socket.off('user-connected');
-            socket.off('user-disconnected');
-            newPeer.destroy();
+            props.socket.off('user-connected');
+            props.socket.off('user-disconnected');
+            props.newPeer.destroy();
             // Disconnect the peer connection and clean up media streams
-            newPeer.disconnect();
+            props.newPeer.disconnect();
         };
 
     }, []);
 
     useEffect(() => {
             // set up listener to answer call
-            newPeer.on('call', call => {
+            props.newPeer.on('call', call => {
                 setAnswerCall(call); //necessary line without it video element wouldn't disappear 
                 call.answer(myStream);
                 call.on('stream', incomingStream => {
@@ -82,16 +82,17 @@ function CallHandling(props) {
                     setStreams(prevStreams => ({...prevStreams, [call.peer]: {name: call.options.metadata, stream:incomingStream}}));
                 });
 
-                socket.on('user-disconnected', (userId) => {
+                props.socket.on('user-disconnected', (userId) => {
                     if(call.peer===userId){
                         call.close();
                     }
                 });
-                socket.on('disconnect', () => {
+                props.socket.on('disconnect', () => {
                     call.close();
                     setStreams({});
                     setUsers({});
-                    window.location.href = `/`;
+                    navigate(`/`);
+                    
                 });
                 // Return a cleanup function to stop all tracks and release resources used by the stream
                 return () => {
@@ -110,7 +111,7 @@ function CallHandling(props) {
         }
 
         const options = {metadata: props.naam}
-        setCall(newPeer.call(userId, myStream, options));
+        setCall(props.newPeer.call(userId, myStream, options));
         // to remove the call button after call was made
         setUsers(prevUsers => ({
             ...prevUsers,
@@ -128,7 +129,7 @@ function CallHandling(props) {
     }
 
     function handleEndClick() {
-        socket.disconnect();
+        props.socket.disconnect();
     }
 
     useEffect(() => {
@@ -144,16 +145,16 @@ function CallHandling(props) {
                 }
             });
 
-            socket.on('user-disconnected', (userId) => {
+            props.socket.on('user-disconnected', (userId) => {
                 if (call.peer === userId ) {
                     call.close();
                 }
             });
-            socket.on('disconnect', () => {
+            props.socket.on('disconnect', () => {
                 call.close();
                 setStreams({});
                 setUsers({});
-                window.location.href = `/`;
+                navigate(`/`);
             });
             call.on('close', () => {
                 setStreams((prevStreams) => {

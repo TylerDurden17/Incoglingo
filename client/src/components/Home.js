@@ -1,13 +1,13 @@
 import React from "react";
 import {Button} from 'react-bootstrap';
 import Topic from "./topic";
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
   const createRoom = () => {
-    //const roomId = uuidV4();
-    //navigate(`/room/${roomId}`);
-    window.location.href = `/room/4460ac02-28dc-491d-962e-f32897521715`;
+    const roomId = '4460ac02-28dc-491d-962e-f32897521715';
+    navigate(`/room/${roomId}`);
   };
   return (
     <>
