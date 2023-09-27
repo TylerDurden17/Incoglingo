@@ -31,6 +31,13 @@ function Room() {
 
 //=======================================================================================
 
+useEffect(() => {
+  // Disconnect socket when component is unmounted (i.e., on navigation)
+  return () => {
+    socket.disconnect();
+  };
+}, []);
+
   useEffect(() => {
     const handleDisconnect = () => {
       console.log('Peer disconnected from server but reconnecting');
