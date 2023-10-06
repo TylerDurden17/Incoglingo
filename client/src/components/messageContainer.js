@@ -35,17 +35,17 @@ function MessageContainer(props) {
         if (type === 'user-disconnected') {
           setMessages((prevMessages) => [
             ...prevMessages,
-            { message: `${name} has disconnected.`, fromMe: false },
+            { message: `${name} has disconnected.`, fromMe: false, sender: '' },
           ]);
         } else if (type === 'user-connected') {
           setMessages((prevMessages) => [
             ...prevMessages,
-            { message: `${name} has joined.`, fromMe: false },
+            { message: `${name} has joined.`, fromMe: false, sender: '' },
           ]);
         } else {
           setMessages((prevMessages) => [
             ...prevMessages,
-            { message: `${name}: ` + message, fromMe: false },
+            { message: message, fromMe: false, sender: `${name}: ` },
           ]);
         }
       }
@@ -53,7 +53,7 @@ function MessageContainer(props) {
     const handleSendMessage = (message) => {
         setMessages((prevMessages) => [
         ...prevMessages,
-        { message: "Me: " + message, fromMe: true },
+        { message:message, fromMe: true, sender: 'Me: ' },
         ]);
 
         props.socket.emit('send-chat-message', message);
@@ -63,16 +63,50 @@ function MessageContainer(props) {
         <>
           <div className={"message-container"}>
             <div ref={messagesRef} id={"messages"}>
-            {messages.map((message, index) => (
-              <p style={{ margin: 0 }} key={index}>
-                {message.fromMe ? (
-                  <strong>{"Me"}:</strong>
-                ) : (
-                  <strong>{message.message.substring(0, message.message.indexOf(':') + 1)}</strong>
-                )}
-                {message.message.substring(message.message.indexOf(':') + 1)}
-              </p>
-            ))}
+            {messages.map((message, index) => {
+              const urlRegex = /((http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))/g; // Regular expression to match URLs
+
+              let messageParts = [];
+              let match;
+              let lastIndex = 0;
+
+              // Loop through all URL matches in the message — repeatedly searches for matches of the regular expression
+              while ((match = urlRegex.exec(message.message)) !== null) {
+
+                // Push the text before the URL as a span element
+                //added unique keys by combining a prefix (either text_ or link_) with lastIndex for each span and a element. This should resolve the warning.
+                messageParts.push(
+                  <span key={`text_${lastIndex}`}>{message.message.substring(lastIndex, match.index)}</span>
+                );
+
+                // Check if the match starts with http to determine if it's a complete URL
+                const isCompleteURL = match[0].startsWith('http');
+
+                // Construct the href attribute accordingly
+                const href = isCompleteURL ? match[0] : `http://${match[0]}`;
+
+                // Push the URL as a clickable link
+                messageParts.push(
+                  <a key={`link_${match.index}`} href={href} target="_blank">
+                    {match[0]}
+                  </a>
+                );
+
+                lastIndex = urlRegex.lastIndex;
+              }
+
+              // Push the remaining text after the last URL as a span element
+              messageParts.push(
+                <span  key={`text_${lastIndex}`}>{message.message.substring(lastIndex)}</span>
+              );
+
+              return (
+                <p style={{ margin: 0 }} key={index}>
+                  <strong>{message.sender}</strong>
+                  {messageParts}
+                </p>
+              );
+            })}
             </div>
 
             <MessageInput onSubmit={handleSendMessage} />
