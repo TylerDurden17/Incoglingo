@@ -73,8 +73,13 @@ function MessageContainer(props) {
               // Loop through all URL matches in the message — repeatedly searches for matches of the regular expression
               while ((match = urlRegex.exec(message.message)) !== null) {
 
-                // Push the text before the URL as a span element
-                //added unique keys by combining a prefix (either text_ or link_) with lastIndex for each span and a element. This should resolve the warning.
+                // Push the text before the URL as a span element into the messageParts array.
+                /*
+                  message.substring(lastIndex, match.index) extracts a portion of the message string:
+                  ->It starts at the position after the last match (indicated by lastIndex).
+                  ->It ends just before the start of the current match (indicated by match.index). 
+                */
+                //added unique keys by combining a prefix (either text_ or link_) with lastIndex for each span and a element. 
                 messageParts.push(
                   <span key={`text_${lastIndex}`}>{message.message.substring(lastIndex, match.index)}</span>
                 );
@@ -92,6 +97,7 @@ function MessageContainer(props) {
                   </a>
                 );
 
+                //updates the lastIndex variable to the position after the current match
                 lastIndex = urlRegex.lastIndex;
               }
 
