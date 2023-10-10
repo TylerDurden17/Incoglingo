@@ -249,8 +249,8 @@
 
   .ModalToDisplayTopic {
     position: relative;
-    top: 10px; /* Adjust this value to add the desired top margin */
-    left: 10px;
+    top: -8px; /* Adjust this value to add the desired top margin */
+    left: 0px;
   }
 }
 

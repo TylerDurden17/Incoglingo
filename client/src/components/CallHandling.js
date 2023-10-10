@@ -110,7 +110,7 @@ function CallHandling(props) {
             return;
         }
 
-        const options = {metadata: props.naam}
+        const options = {metadata: props.name}
         setCall(props.newPeer.call(userId, myStream, options));
         // to remove the call button after call was made
         setUsers(prevUsers => ({
@@ -216,7 +216,7 @@ function CallHandling(props) {
                     <div className="button-container">
                         {Object.keys(users).map((userId) => (
                             users[userId].status === false && (
-                                <button id={"call-button"} key={userId} onClick={() => handleClick(userId)}>Click here to Call {users[userId].name}</button>
+                                <button id={"call-button"} key={userId} onClick={() => handleClick(userId)}>Add {users[userId].name}</button>
                             )
                         ))}
 

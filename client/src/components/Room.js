@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import './Room.css';
 import { useParams } from 'react-router-dom';
 import MessageContainer from "./messageContainer";
@@ -10,57 +10,59 @@ function Room() {
     
   const { roomId } = useParams();
 
-  const naam = window.prompt('Please enter your name:');
-
-  const newPeer = new Peer(undefined, {
-    host: "0.peerjs.com",
-    port: 443,
-    path: "/"
-  });
-
-  //====================================================================================
-
-  //for development on local machine
-  // const socket = io('http://localhost:8080', {
-  //   transports : ['websocket', 'polling']
-  // });
-  // for production
-  const socket = io('https://incoglingo.onrender.com/', {
-    transports : ['websocket', 'polling']
-  });
-
-//=======================================================================================
-
-useEffect(() => {
-  // Disconnect socket when component is unmounted (i.e., on navigation)
-  return () => {
-    socket.disconnect();
-  };
-}, []);
+  const [peer, setPeer] = useState(null);
+  const [socket, setSocket] = useState(null);
+  const [name, setName] = useState('');
 
   useEffect(() => {
-    const handleDisconnect = () => {
-      console.log('Peer disconnected from server but reconnecting');
-      // Handle the disconnection here, for example:
-      // - Prompt the user to reconnect to the server
-      // - Attempt to reconnect to the server automatically
-      // - Clean up any resources associated with the peer
-      newPeer.destroy();
-      newPeer.reconnect();
-    };
-    
-    newPeer.on("open", (id) => {
-        socket.emit('join-room', roomId, id, naam);
-        //console.log('room joined with name:', naam);
-    });
-    
-    newPeer.on('disconnected', handleDisconnect);
 
+    const newPeer = new Peer(undefined, {
+      host: "0.peerjs.com",
+      port: 443,
+      path: "/"
+    });
+
+    setPeer(newPeer)
+
+    //for development on local machine
+    // const socket = io('http://localhost:8080', {
+    //   transports : ['websocket', 'polling']
+    // });
+    // for production
+    const socket = io('https://incoglingo.onrender.com/', {
+      transports : ['websocket', 'polling']
+    });
+
+    setSocket(socket);
+    
+    /*By using setTimeout with a delay of 0, 
+      you're essentially scheduling the execution of the code inside the callback function to
+      occur in the next event cycle,
+      allowing any pending rendering to complete first.
+     */
+    setTimeout(() => {
+      const name = window.prompt('Please enter your name:');
+      setName(name);
+    }, 0);
+
+    // Disconnect socket when component is unmounted (i.e., on navigation)
     return () => {
-      newPeer.off('disconnected', handleDisconnect);
-      newPeer.destroy();
+      socket.disconnect();
+      if(peer){
+      peer.disconnect();
+      peer.destroy();}
     };
-  }, [roomId, naam]);
+
+  }, []);
+
+useEffect(() => {
+  if(peer) {
+    peer.on("open", (id) => {
+        socket.emit('join-room', roomId, id, name);
+    });    
+  }
+
+}, [roomId, name]);
 
   return (
     <>
@@ -72,8 +74,7 @@ useEffect(() => {
 
         <div id="inner-audio-chat">
           
-            <VideoGrid naam={naam} newPeer={newPeer} socket={socket}/>
-
+        {peer && (<VideoGrid name={name} newPeer = {peer} socket={socket}/>)}
 
         </div>
 
@@ -81,7 +82,7 @@ useEffect(() => {
           <div id="texting-child">
             {/* display the list of connected users*/}
 
-            <MessageContainer socket={socket}/>
+            {socket && <MessageContainer socket={socket}/>}
           
           </div>
 
