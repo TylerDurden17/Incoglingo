@@ -15,7 +15,7 @@ const Topic = () => {
 
       // Update the state with the fetched topic and details
       setTopic('What fictional character do you relate the most to? Why?');
-      setTopicDetail('26 August 07:30 PM (1 hour)');
+      setTopicDetail('25 November 07:30 PM (1 hour)');
     } catch (error) {
       console.error('Error fetching topic:', error);
       // You can set some default or fallback values for the topic and details in case of an error
@@ -31,8 +31,10 @@ const Topic = () => {
 
   return (
     <div className="topic-container">
-      <h2 className="topic">Today's topic: {topic}</h2>
-      <p className="topic-detail">{topicDetail}</p>
+      <h3 className="topic">Today's topic: {topic}</h3>
+      <small className="topic-detail">{topicDetail}</small>
+      <br></br>
+      <br></br>
       <Questions/>
     </div>
   );

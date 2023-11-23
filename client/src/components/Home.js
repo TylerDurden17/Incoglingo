@@ -13,7 +13,8 @@ function Home() {
     <>
     <div id="home">
       <header style={{textAlign: "center"}}>
-        <h1>Incoglingo</h1>
+        <br></br>
+        <div style={{fontSize:'4.5em'}}>Incoglingo</div>
         <br></br>
       </header>
 

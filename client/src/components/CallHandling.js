@@ -130,6 +130,7 @@ function CallHandling(props) {
 
     function handleEndClick() {
         props.socket.disconnect();
+        props.newPeer.destroy();
     }
 
     useEffect(() => {
@@ -200,37 +201,43 @@ function CallHandling(props) {
             {Object.keys(users).length === 0 && Object.keys(streams).length === 0 ? (
                 <p>Please wait for people to join the room or them to call you</p>
             ) : (
-            <>
-                <div id={"call-handling"}>
-                    <ul className="video-list">
-                        {Object.values(streams).map((stream, index) => (
-                            
-                            <li className="video-item" key={stream.stream.id}>
-                                <audio key={stream.stream.id} ref={el => videoRefs.current[index] = el} autoPlay></audio>
-                                <p>{stream.name} 🔊</p> 
-                            </li>
-                            
-                        ))}
-                    </ul>
-                    
-                    <div className="button-container">
-                        {Object.keys(users).map((userId) => (
-                            users[userId].status === false && (
-                                <button id={"call-button"} key={userId} onClick={() => handleClick(userId)}>Add {users[userId].name}</button>
-                            )
-                        ))}
+                <>
+                    <div id={"call-handling"}>
+                        <ul className="video-list">
+                            {Object.values(streams).map((stream, index) => (
+                                
+                                <li className="video-item" key={stream.stream.id}>
+                                    <audio key={stream.stream.id} ref={el => videoRefs.current[index] = el} autoPlay></audio>
+                                    <p>{stream.name} 🔊</p> 
+                                </li>
+                                
+                            ))}
+                        </ul>
+                        
+                        <div className="button-container">
+                            <div id={"parent-call-button"}>
+                                {Object.keys(users).map((userId) => (
+                                    users[userId].status === false && (
+                                        <button style={{margin: "5px"}} id={"child-call-button"} key={userId} onClick={() => handleClick(userId)}>Add {users[userId].name}</button>
+                                    )
+                                ))}
+                            </div>
 
-                        <button id={"muteButton"} onClick={() => handleMuteClick()} style={{
-                            backgroundColor: isMuted ? '#ea4335' : '#6495ED'
-                        }}>
-                            {isMuted ? <MdMicOff /> : <MdMic />}
-                        </button>
-                        <button id={"endCall"} onClick={() => handleEndClick()}><MdCallEnd/></button>
+                            {Object.keys(streams).length !== 0 && (
+                                <>
+                                    <button id={"muteButton"} onClick={() => handleMuteClick()} style={{
+                                        backgroundColor: isMuted ? '#ea4335' : '#6495ED'
+                                    }}>
+                                        {isMuted ? <MdMicOff /> : <MdMic />}
+                                    </button>
+                                    <button id={"endCall"} onClick={() => handleEndClick()}><MdCallEnd/></button>
+                                </>
+                            )}
 
+                        </div>
                     </div>
-                </div>
-            </>
-          )}
+                </>
+            )}
         </>
       );
       

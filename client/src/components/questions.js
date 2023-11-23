@@ -30,7 +30,7 @@ const Questions = () => {
   return (
     <div className="questions-container">
       <div className="ice-breaker-questions">
-        <h3>Ice Breaker Questions</h3>
+        <h5>Ice Breaker Questions</h5>
         <ul>
           {iceBreakerQuestions.map((question, index) => (
             <li key={index}>{question}</li>
@@ -38,7 +38,7 @@ const Questions = () => {
         </ul>
       </div>
       <div className="main-topic-questions">
-        <h3>Main Topic Questions</h3>
+        <h5>Main Topic Questions</h5>
         <ul>
           {mainTopicQuestions.map((question, index) => (
             <li key={index}>{question}</li>
