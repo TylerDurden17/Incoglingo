@@ -6,6 +6,7 @@ import VideoGrid from "./videoGrid";
 import Peer from "peerjs";
 import io from "socket.io-client";
 import Spinner from 'react-bootstrap/Spinner';
+import Modal from "react-modal";
 
 function Room() {
   const { roomId } = useParams();
@@ -13,8 +14,31 @@ function Room() {
   const [socket, setSocket] = useState(null);
   const [name, setName] = useState("");
   const [isRoomJoined, setIsRoomJoined] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
   // Only initialize peer and socket after the user has provided their name
   useEffect(() => {
+    
+    navigator.mediaDevices.getUserMedia({ video: false, audio: true })
+        .then(() => {
+            localStorage.setItem('microphonePermission', true);
+            setModalIsOpen(false);
+        })
+        .catch(error => {
+            console.error('Error answering call.', error);
+            setModalIsOpen(true);
+            localStorage.setItem('microphonePermission', false);
+        });
+
+    if(localStorage.getItem('microphonePermission') === null) {
+      setModalIsOpen(true);
+    }
+  
+    if(localStorage.getItem('microphonePermission') === 'false'){
+      setModalIsOpen(true);
+    }
+
+
     if (!name) return;
 
     const newPeer = new Peer(undefined, {
@@ -56,21 +80,45 @@ function Room() {
   };
 
   // The user will first provide their name before the rest of the UI loads
-  if (!isRoomJoined) {
+  if (!isRoomJoined && !modalIsOpen) {
     return (
       <div className="name-prompt">
         <form onSubmit={handleNameSubmit}>
           <label htmlFor="name">Please enter your name:</label>
           <input id="name" name="name" type="text" required autoFocus />
-          <button type="submit" disabled={name}> { name ?
-              <Spinner animation="border" role="status" size="sm">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-          :'Join Room'}</button>
+          <button type="submit" disabled={name}> 
+            { name ?
+                <Spinner animation="border" role="status" size="sm">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+            :'Join Room'}
+          </button>
           
         </form>
       </div>
     );
+  }
+
+  if(modalIsOpen){
+    return(
+      <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={() => setModalIsOpen(false)}
+          contentLabel="Microphone Access Modal"
+          ariaHideApp={false}
+          shouldCloseOnOverlayClick={false} // Prevent closing on click outside
+          shouldCloseOnEsc={false} // Prevent closing on escape key
+          >
+          <div className='modalContent'>
+              <div>
+                  <h1>Microphone Access Required</h1>
+                  <img src='https://i.imgur.com/GncKY89.png' alt="from address bar allow microphone"
+                  style={{ width: '200px'}}></img>
+                  <p>You can turn off your microphone any time you want.</p>
+              </div>
+          </div>
+      </Modal> 
+      );
   }
 
   // Render the main UI only after the room has been joined

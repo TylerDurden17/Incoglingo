@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom';
 function Home() {
   const navigate = useNavigate();
   const createRoom = () => {
-    const roomId = '4460ac02-28dc-491d-962e-f32897521715';
-    navigate(`/room/${roomId}`);
+    //const roomId = '4460ac02-28dc-491d-962e-f32897521715';
+    navigate(`/room`);
   };
   return (
     <>

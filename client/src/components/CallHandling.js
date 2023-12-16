@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Modal from "react-modal";
 import { MdMic, MdMicOff, MdCallEnd } from "react-icons/md";
+import Spinner from 'react-bootstrap/Spinner';
 
 function CallHandling(props) {
     const navigate = useNavigate();
-    const [modalIsOpen, setModalIsOpen] = useState(false);
     const videoRefs = useRef([]);
     const [call, setCall] = useState(null);
     const [answerCall, setAnswerCall] = useState(null);
@@ -13,9 +12,7 @@ function CallHandling(props) {
     const [users, setUsers] = useState({});
     const [isMuted, setIsMuted] = useState(false);
     const [myStream, setMyStream] = useState(null);
-
-    // useEffect(() => {
-    // },[]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         // Set the srcObject property of each video element
@@ -26,25 +23,17 @@ function CallHandling(props) {
     }, [streams]); 
 
     useEffect(() => {
-
-        if(localStorage.getItem('microphonePermission') === null) {
-            setModalIsOpen(true);
-        }
-        
-        if(localStorage.getItem('microphonePermission') === 'false'){
-            setModalIsOpen(true);
-        }
         
         navigator.mediaDevices.getUserMedia({ video: false, audio: true })
         .then(stream => {
             setMyStream(stream);
-            localStorage.setItem('microphonePermission', true);
-            setModalIsOpen(false);
+            // localStorage.setItem('microphonePermission', true);
+            // setModalIsOpen(false);
         })
         .catch(error => {
             console.error('Error answering call.', error);
-            setModalIsOpen(true);
-            localStorage.setItem('microphonePermission', false);
+            // setModalIsOpen(true);
+            // localStorage.setItem('microphonePermission', false);
         });
 
         props.socket.on('user-connected', (userId, name) => {
@@ -104,6 +93,7 @@ function CallHandling(props) {
     
     
     function handleClick(userId) {
+        setLoading(true);
         // Check if a call is already in progress with the selected user
         if (call !== null && call.peer === userId) {
             alert('Call with user already in progress');
@@ -111,6 +101,7 @@ function CallHandling(props) {
         }
 
         const options = {metadata: props.name}
+        
         setCall(props.newPeer.call(userId, myStream, options));
         // to remove the call button after call was made
         setUsers(prevUsers => ({
@@ -140,10 +131,13 @@ function CallHandling(props) {
                 // will cause multiple audio elements to be rendered on the page for each subsequent call to the same user.
                 if (!streams[call.peer]) {
                     setStreams(prevStreams => ({...prevStreams, [call.peer]: {name: users[call.peer].name, stream:userVideoStream}}));
+                    setLoading(false);
+
                     //  setStreams(prevStreams => ({ ...prevStreams, [call.peer]: userVideoStream }));
                     //setUsers(prevUsers => ({ ...prevUsers, [call.peer]: { ...prevUsers[call.peer], name: prevUsers[call.peer].name || 'Anonymous' } }));
                     
                 }
+                else{console.log('error');}
             });
 
             props.socket.on('user-disconnected', (userId) => {
@@ -180,48 +174,29 @@ function CallHandling(props) {
 
     return (
         <>
-            <Modal
-                isOpen={modalIsOpen}
-                onRequestClose={() => setModalIsOpen(false)}
-                contentLabel="Microphone Access Modal"
-                ariaHideApp={false}
-                shouldCloseOnOverlayClick={false} // Prevent closing on click outside
-                shouldCloseOnEsc={false} // Prevent closing on escape key
-                >
-                <div className='modalContent'>
-                    <div>
-                        <h1>Microphone Access Required</h1>
-                        <img src='https://i.imgur.com/GncKY89.png' alt="from address bar allow microphone"
-                        style={{ width: '200px'}}></img>
-                        <p>You can turn off your microphone any time you want.</p>
-                    </div>
-                </div>
-            </Modal>
-
             {Object.keys(users).length === 0 && Object.keys(streams).length === 0 ? (
-                <p>Please wait for people to join the room or them to call you</p>
+                <p>Please wait for people to join the room or them to add you</p>
             ) : (
                 <>
                     <div id={"call-handling"}>
-                        <ul className="video-list">
-                            {Object.values(streams).map((stream, index) => (
-                                
-                                <li className="video-item" key={stream.stream.id}>
-                                    <audio key={stream.stream.id} ref={el => videoRefs.current[index] = el} autoPlay></audio>
-                                    <p>{stream.name} 🔊</p> 
+
+                    <ul className="video-list">
+                        {Object.values(streams).map((stream, index) => (
+                            <React.Fragment key={index}>
+                                <li className="video-item" key={`li-${stream.stream.id}`}>
+                                    <audio ref={el => videoRefs.current[index] = el} autoPlay key={`audio-${stream.stream.id}`}></audio>
+                                    <p>{stream.name} 🔊</p>
                                 </li>
-                                
-                            ))}
-                        </ul>
+                            </React.Fragment>
+                        ))}
+                    </ul>
+                        {loading ? 
+                            <Spinner style={{marginLeft:'30px'}} animation="border" role="status" size="sm">
+                                <span className="visually-hidden">Loading...</span>
+                            </Spinner>
+                        :<></>}
                         
                         <div className="button-container">
-                            <div id={"parent-call-button"}>
-                                {Object.keys(users).map((userId) => (
-                                    users[userId].status === false && (
-                                        <button style={{margin: "5px"}} id={"child-call-button"} key={userId} onClick={() => handleClick(userId)}>Add {users[userId].name}</button>
-                                    )
-                                ))}
-                            </div>
 
                             {Object.keys(streams).length !== 0 && (
                                 <>
@@ -236,6 +211,18 @@ function CallHandling(props) {
 
                         </div>
                     </div>
+
+                    <div style={{marginTop:"20px"}} id={"buttonsThatAddPeers"}>
+                        {Object.keys(users).map((userId) => (
+                            users[userId].status === false && (
+                                <div className={"parent-call-button"} key={userId}>
+                                    <label style={{ margin: "5px" }}> Add <b>{users[userId].name}</b> for audio chat</label>
+                                    <button style={{ margin: "5px" }} id={"child-call-button"} onClick={() => handleClick(userId)}>Add</button>
+                                </div>
+                            )
+                        ))}
+                    </div>
+
                 </>
             )}
         </>

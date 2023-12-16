@@ -1,6 +1,6 @@
 import CallHandling from "./CallHandling";
-import React, {useEffect, useState} from 'react';
-import { useLocation } from 'react-router-dom';
+import React, {useState} from 'react';
+// import { useLocation } from 'react-router-dom';
 import Topic from "./topic";
 import Modal from "react-modal";
 import {Button} from 'react-bootstrap';
@@ -55,7 +55,7 @@ const customModalStyles = {
 
 
 function VideoGrid(props){
-  const location = useLocation();
+  //const location = useLocation();
 
   const [showModal, setShowModal] = useState(false);
 
@@ -63,11 +63,11 @@ function VideoGrid(props){
     setShowModal(!showModal);
   };
 
-  useEffect(() => {
-    // Track page view when the component is mounted or when the location changes
-    window.gtag('event', 'page_view', { page_path: location.pathname });
+  // useEffect(() => {
+  //   // Track page view when the component is mounted or when the location changes
+  //   window.gtag('event', 'page_view', { page_path: location.pathname });
 
-  }, [location]);
+  // }, [location]);
   
     return (
       <>

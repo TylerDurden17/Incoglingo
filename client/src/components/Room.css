@@ -3,15 +3,9 @@ ul{
 }
 #groupName {
   margin: 0;
-  padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #333;
-  color: #fff;
-  height: 35px;
-  font-size: 24px;
-  font-weight: bold;
 }
 /* Style for the video */
 .video-list {
@@ -81,6 +75,12 @@ ul{
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
+}
+
+.parent-call-button{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 
@@ -217,9 +217,10 @@ ul{
     justify-content: center;
   }
   #call-handling {
-    border: 1px solid #ccc;
+    /* border: 1px solid #ccc; */
     border-radius: 28px;
   }
+
   #messages{
     max-height: 15rem;
     overflow-y: scroll;
