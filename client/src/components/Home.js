@@ -17,7 +17,6 @@ function Home() {
         <div style={{fontSize:'4.5em'}}>Incoglingo</div>
         <br></br>
       </header>
-
       <main>
         <div style={{ display: "grid", placeItems: "center" }}>
           <article style={{ display: "grid", gridTemplateRows: "auto auto", gridRowGap: "10px", alignItems: "center", marginBottom: "10px" }}>
@@ -29,8 +28,19 @@ function Home() {
                 Join Room
               </Button>
             </div>
+
           </article>
-          <div style={{border:'1px solid #555', borderRadius:'16px', padding:'10px', marginTop:'4%'}}>
+          <div>
+      <label>Join the Facebook group:</label> {' '}
+      <a
+        href="https://www.facebook.com/groups/incoglingo/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Incoglingo
+      </a>
+    </div>
+            <div style={{border:'1px solid #555', borderRadius:'16px', padding:'10px', marginTop:'1%'}}>
             <Topic/>
           </div>
         </div>
