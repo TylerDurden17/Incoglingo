@@ -21,7 +21,7 @@ const MeetingTime = () => {
   
   useEffect(() => {
     //explicitly specify the time zone when creating the initial moment object
-    const meetingTimeUTC = moment.tz('2023-12-07T18:30:00', 'Asia/Kolkata')
+    const meetingTimeUTC = moment.tz('2023-12-07T22:30:00', 'Asia/Kolkata')
 
     const userTimezone = moment.tz.guess();
     setZone(userTimezone)
