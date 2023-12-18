@@ -51,7 +51,15 @@ function Room() {
     //   transports : ["websocket", "polling"]
     // });
     const newSocket = io('https://incoglingo.onrender.com/', {
-      transports : ['websocket', 'polling']
+      transports : ['websocket', 'polling'],
+      reconnection: true, // Enable reconnection
+      reconnectionAttempts: 5, // Number of reconnection attempts
+      reconnectionDelay: 1000, // Delay between reconnection attempts in milliseconds
+      reconnectionDelayMax: 5000, // Maximum delay between reconnection attempts
+    });
+
+    newSocket.on('reconnect', (attemptNumber) => {
+      console.log(`Reconnected to server after ${attemptNumber} attempts`);
     });
 
     newPeer.on("open", (id) => {

@@ -76,13 +76,13 @@ function CallHandling(props) {
                         call.close();
                     }
                 });
-                props.socket.on('disconnect', () => {
-                    call.close();
-                    setStreams({});
-                    setUsers({});
-                    navigate(`/`);
+                // props.socket.on('disconnect', () => {
+                //     call.close();
+                //     setStreams({});
+                //     setUsers({});
+                //     //navigate(`/`);
                     
-                });
+                // });
                 // Return a cleanup function to stop all tracks and release resources used by the stream
                 return () => {
                     call.close();
@@ -122,6 +122,8 @@ function CallHandling(props) {
     function handleEndClick() {
         props.socket.disconnect();
         props.newPeer.destroy();
+        //review this code I am not sure if it is fully correct way to do this, that is a better way must be there.
+        navigate(`/`);
     }
 
     useEffect(() => {
@@ -145,12 +147,12 @@ function CallHandling(props) {
                     call.close();
                 }
             });
-            props.socket.on('disconnect', () => {
-                call.close();
-                setStreams({});
-                setUsers({});
-                navigate(`/`);
-            });
+            // props.socket.on('disconnect', () => {
+            //     call.close();
+            //     setStreams({});
+            //     setUsers({});
+            //     //navigate(`/`);
+            // });
             call.on('close', () => {
                 setStreams((prevStreams) => {
                     const newStreams = { ...prevStreams };
