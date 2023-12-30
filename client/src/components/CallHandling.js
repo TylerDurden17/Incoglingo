@@ -52,9 +52,9 @@ function CallHandling(props) {
         });
 
         return () => {
+            props.newPeer.destroy();
             props.socket.off('user-connected');
             props.socket.off('user-disconnected');
-            props.newPeer.destroy();
             // Disconnect the peer connection and clean up media streams
             props.newPeer.disconnect();
         };
@@ -62,8 +62,8 @@ function CallHandling(props) {
     }, []);
 
     useEffect(() => {
-            // set up listener to answer call
-            props.newPeer.on('call', call => {
+            
+            props.newPeer.on('call', call => {                
                 setAnswerCall(call); //necessary line without it video element wouldn't disappear 
                 call.answer(myStream);
                 call.on('stream', incomingStream => {
@@ -72,23 +72,37 @@ function CallHandling(props) {
                 });
 
                 props.socket.on('user-disconnected', (userId) => {
-                    if(call.peer===userId){
+                    const dataConn = props.newPeer.connect(userId);
+                    if(dataConn.open===false && call.peer===userId){
                         call.close();
                     }
                 });
                 // props.socket.on('disconnect', () => {
-                //     call.close();
-                //     setStreams({});
-                //     setUsers({});
+                //     // call.close();
+                //     // setStreams({});
+                //     // setUsers({});
                 //     //navigate(`/`);
+                //     console.log('client disconnected');
                     
                 // });
+
+                props.socket.on('deliberate', (peerId) => {
+                    console.log('deliv ans');
+                    if(call.peer===peerId){
+                        call.close();
+                    }
+                });
+
                 // Return a cleanup function to stop all tracks and release resources used by the stream
                 return () => {
-                    call.close();
+                    // Disconnect the peer connection and clean up media streams
+                    props.newPeer.disconnect();
+                    
+                    props.newPeer.destroy();
                 };
 
             });
+            
     }, [myStream])
     
     
@@ -120,14 +134,15 @@ function CallHandling(props) {
     }
 
     function handleEndClick() {
-        props.socket.disconnect();
         props.newPeer.destroy();
-        //review this code I am not sure if it is fully correct way to do this, that is a better way must be there.
+        props.socket.emit('deliberate-disconnect');
+        props.socket.disconnect();
         navigate(`/`);
     }
 
     useEffect(() => {
         if (call) {
+            
             call.on('stream', userVideoStream => {
                 // Check if the stream is already in the state before adding it. If not it
                 // will cause multiple audio elements to be rendered on the page for each subsequent call to the same user.
@@ -141,18 +156,39 @@ function CallHandling(props) {
                 }
                 else{console.log('error');}
             });
-
+            //how tf is this the answer side
             props.socket.on('user-disconnected', (userId) => {
-                if (call.peer === userId ) {
+                const dataConn = props.newPeer.connect(userId);
+                if(dataConn.open===false && call.peer===userId){
+                    call.close();
+                }
+
+                // setTimeout(() => {
+                //     if (call.peer === userId && call.peerConnection.iceConnectionState === "disconnected" || call.peerConnection.iceConnectionState === "failed") {
+                //         call.close();
+                //     }
+                // }, 10000)
+            });
+            props.socket.on('deliberate', (peerId) => {
+                console.log('deliv');
+                
+                if(call.peer===peerId){
                     call.close();
                 }
             });
             // props.socket.on('disconnect', () => {
-            //     call.close();
-            //     setStreams({});
-            //     setUsers({});
+                
+            //     // call.close();
+            //     // setStreams({});
+            //     // setUsers({});s
             //     //navigate(`/`);
+            //     console.log('ans client disconnected');
             // });
+
+            call.on('error', (err) => {
+                console.log('Call error', err);
+            });
+
             call.on('close', () => {
                 setStreams((prevStreams) => {
                     const newStreams = { ...prevStreams };
@@ -162,8 +198,12 @@ function CallHandling(props) {
                 setCall(null);
             });
         }
+        else{
+
+        }
         if(answerCall){
-            answerCall.on('close', ()=> {
+            answerCall.on('close', () => {
+                console.log('peer was destroyed');
                 setStreams((prevStreams) => {
                     const newStreams = { ...prevStreams };
                     delete newStreams[answerCall.peer];
@@ -171,6 +211,9 @@ function CallHandling(props) {
                 });
                 setAnswerCall(null);
             })
+        }   
+        else{   
+
         }
     }, [call, streams, answerCall]);
 

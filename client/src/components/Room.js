@@ -49,6 +49,8 @@ function Room() {
 
     // const newSocket = io("http://localhost:8080", {
     //   transports : ["websocket", "polling"]
+    //   // reconnectionDelay: 10000, // defaults to 1000
+    //   // reconnectionDelayMax: 10000 // defaults to 5000
     // });
     const newSocket = io('https://incoglingo.onrender.com/', {
       transports : ['websocket', 'polling'],
@@ -58,28 +60,29 @@ function Room() {
       reconnectionDelayMax: 5000, // Maximum delay between reconnection attempts
     });
 
-    newSocket.on('reconnect', (attemptNumber) => {
-      console.log(`Reconnected to server after ${attemptNumber} attempts`);
-    });
+    // newSocket.on('reconnect', (attemptNumber) => {
+    //   console.log(`Reconnected to server after ${attemptNumber} attempts`);
+    // });
 
     newPeer.on("open", (id) => {
       newSocket.emit("join-room", roomId, id, name);
       setIsRoomJoined(true); // Room is now joined
     });
 
+
     setPeer(newPeer);
     setSocket(newSocket);
 
     // Clean up on component unmount
     return () => {
-      newSocket.disconnect();
-      newPeer.disconnect();
       newPeer.destroy();
+      newPeer.disconnect();
+      newSocket.disconnect();
     };
   }, [name, roomId]);
 
   const handleNameSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault(); 
     
       const formData = new FormData(event.target);
       const enteredName = formData.get("name");
@@ -128,6 +131,11 @@ function Room() {
       </Modal> 
       );
   }
+
+  // const disconnectSocket = () => {
+  //   console.log('clicked');
+  //   socket.io.engine.close();
+  // };
 
   // Render the main UI only after the room has been joined
   return (
