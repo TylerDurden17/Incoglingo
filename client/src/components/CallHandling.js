@@ -51,6 +51,10 @@ function CallHandling(props) {
             });
         });
 
+        props.newPeer.on('error', (err) => {
+            console.log(err);
+        })
+
         return () => {
             props.newPeer.destroy();
             props.socket.off('user-connected');
@@ -73,9 +77,10 @@ function CallHandling(props) {
 
                 props.socket.on('user-disconnected', (userId) => {
                     const dataConn = props.newPeer.connect(userId);
-                    if(dataConn.open===false && call.peer===userId){
-                        call.close();
-                    }
+                    // if(dataConn.open===false && call.peer===userId){
+                    //     console.log('moogooooooooo');
+                    //     call.close();
+                    // }
                 });
                 // props.socket.on('disconnect', () => {
                 //     // call.close();
@@ -86,9 +91,9 @@ function CallHandling(props) {
                     
                 // });
 
-                props.socket.on('deliberate', (peerId) => {
-                    console.log('deliv ans');
-                    if(call.peer===peerId){
+                props.socket.on('deliberate', (id) => {
+                    if(call.peer===id){
+                        console.log('told by server');
                         call.close();
                     }
                 });
@@ -134,14 +139,28 @@ function CallHandling(props) {
     }
 
     function handleEndClick() {
+        props.socket.emit('deliberate-disconnect', props.newPeer.id);
         props.newPeer.destroy();
-        props.socket.emit('deliberate-disconnect');
         props.socket.disconnect();
         navigate(`/`);
     }
 
     useEffect(() => {
         if (call) {
+            //I had made a connect when remote peer disconnected by whatever and if connected
+            // means there is a call and no need to close call but if error ...\||/
+            props.newPeer.on('error', (err) => {
+                const error = err.message;
+                if (error.includes('Could not connect to peer')) {
+                    const match = error.match(/Could not connect to peer ([\w-]+)$/);
+                        const dynamicPeerId = match[1];
+                        if(call.peer===dynamicPeerId) {
+                            console.log('doogooooooooo');
+                            call.close();
+                        }
+                    
+                }  
+            });
             
             call.on('stream', userVideoStream => {
                 // Check if the stream is already in the state before adding it. If not it
@@ -159,9 +178,10 @@ function CallHandling(props) {
             //how tf is this the answer side
             props.socket.on('user-disconnected', (userId) => {
                 const dataConn = props.newPeer.connect(userId);
-                if(dataConn.open===false && call.peer===userId){
-                    call.close();
-                }
+                // if(dataConn.open===false && call.peer===userId){
+                //     console.log('the one who ko');
+                //     call.close();
+                // }
 
                 // setTimeout(() => {
                 //     if (call.peer === userId && call.peerConnection.iceConnectionState === "disconnected" || call.peerConnection.iceConnectionState === "failed") {
@@ -169,10 +189,11 @@ function CallHandling(props) {
                 //     }
                 // }, 10000)
             });
-            props.socket.on('deliberate', (peerId) => {
+            props.socket.on('deliberate', (id) => {
                 console.log('deliv');
                 
-                if(call.peer===peerId){
+                if(call.peer===id){
+                    console.log('told by server');
                     call.close();
                 }
             });
@@ -190,6 +211,8 @@ function CallHandling(props) {
             });
 
             call.on('close', () => {
+
+                console.log('call peer was destroyed');
                 setStreams((prevStreams) => {
                     const newStreams = { ...prevStreams };
                     delete newStreams[call.peer];
@@ -198,12 +221,22 @@ function CallHandling(props) {
                 setCall(null);
             });
         }
-        else{
-
-        }
         if(answerCall){
+            props.newPeer.on('error', (err) => {
+                console.log(err.message);
+                const error = err.message;
+                if (error.includes('Could not connect to peer')) {
+                    const match = error.match(/Could not connect to peer ([\w-]+)$/);
+                        const dynamicPeerId = match[1];
+                        if(answerCall.peer===dynamicPeerId) {
+                            console.log('moogooooooooo');
+                            answerCall.close();
+                        }
+                    
+                }  
+            });
             answerCall.on('close', () => {
-                console.log('peer was destroyed');
+                console.log('ans peer was destroyed');
                 setStreams((prevStreams) => {
                     const newStreams = { ...prevStreams };
                     delete newStreams[answerCall.peer];
@@ -211,9 +244,6 @@ function CallHandling(props) {
                 });
                 setAnswerCall(null);
             })
-        }   
-        else{   
-
         }
     }, [call, streams, answerCall]);
 

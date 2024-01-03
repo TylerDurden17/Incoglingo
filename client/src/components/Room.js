@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Room.css";
-import { useParams } from "react-router-dom";
+//import { useParams } from "react-router-dom";
 import MessageContainer from "./messageContainer";
 import VideoGrid from "./videoGrid";
 import Peer from "peerjs";
@@ -9,7 +9,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import Modal from "react-modal";
 
 function Room() {
-  const { roomId } = useParams();
+  const roomId = 'room';
   const [peer, setPeer] = useState(null);
   const [socket, setSocket] = useState(null);
   const [name, setName] = useState("");
@@ -47,31 +47,34 @@ function Room() {
       path: "/"
     });
 
-    // const newSocket = io("http://localhost:8080", {
-    //   transports : ["websocket", "polling"]
-    //   // reconnectionDelay: 10000, // defaults to 1000
-    //   // reconnectionDelayMax: 10000 // defaults to 5000
-    // });
-    const newSocket = io('https://incoglingo.onrender.com/', {
-      transports : ['websocket', 'polling'],
-      reconnection: true, // Enable reconnection
-      reconnectionAttempts: 5, // Number of reconnection attempts
-      reconnectionDelay: 1000, // Delay between reconnection attempts in milliseconds
-      reconnectionDelayMax: 5000, // Maximum delay between reconnection attempts
+    const newSocket = io("http://localhost:8080", {
+      transports : ["websocket", "polling"],
+       reconnectionDelay: 10000, // defaults to 1000
+       reconnectionDelayMax: 10000, // defaults to 5000
+       reconnectionAttempts: 5000
     });
-
-    // newSocket.on('reconnect', (attemptNumber) => {
-    //   console.log(`Reconnected to server after ${attemptNumber} attempts`);
+    // const newSocket = io('https://incoglingo.onrender.com/', {
+    //   transports : ['websocket', 'polling'],
+    //   reconnection: true, // Enable reconnection
+    //   reconnectionAttempts: 5, // Number of reconnection attempts
+    //   reconnectionDelay: 1000, // Delay between reconnection attempts in milliseconds
+    //   reconnectionDelayMax: 5000, // Maximum delay between reconnection attempts
     // });
+
 
     newPeer.on("open", (id) => {
       newSocket.emit("join-room", roomId, id, name);
-      setIsRoomJoined(true); // Room is now joined
     });
+
+
+    newSocket.on('joined', () => {
+      setIsRoomJoined(true); // Room is now joined
+    })
 
 
     setPeer(newPeer);
     setSocket(newSocket);
+
 
     // Clean up on component unmount
     return () => {
@@ -110,6 +113,25 @@ function Room() {
     );
   }
 
+  if(isRoomJoined){
+
+    socket.on("connect", () => {
+      console.log("Connected!");
+      
+      if (socket.recovered) {
+        // Socket was recovered 
+        console.log('recovered');
+        socket.emit('name', name, peer.id );
+        //newSocket.emit("join-room", roomId, id, name)
+        // Could not recover - rejoin manually
+      } else {
+        // New socket
+        //recovery fails if the sockeet has not recieved any message
+        console.log('Failed');
+      }
+    });
+  }
+
   if(modalIsOpen){
     return(
       <Modal
@@ -132,11 +154,10 @@ function Room() {
       );
   }
 
-  // const disconnectSocket = () => {
-  //   console.log('clicked');
-  //   socket.io.engine.close();
-  // };
-
+  const disconnectSocket = () => {
+    console.log('clicked');
+    socket.io.engine.close();
+  };
   // Render the main UI only after the room has been joined
   return (
     <>
@@ -146,9 +167,11 @@ function Room() {
       <article id="bothchats">
         <div id="inner-audio-chat">
           {peer && socket && (<VideoGrid name={name} newPeer={peer} socket={socket} />)}
+          <button onClick={disconnectSocket}>Disconnect Socket</button>
         </div>
         <div id="texting">
           <div id="texting-child">
+            {isRoomJoined && <p>Welcome.</p>}
             {socket && <MessageContainer socket={socket} />}
           </div>
         </div>
