@@ -18,25 +18,12 @@ const port = process.env.PORT || 8080;
 // Declare global variables to store the parameters so after recovery I still have
 // roomId, id since i don't want to join room again
 
-    let roomId = null;
+let roomId = null;
 
 io.on('connection', (socket) => {
 
     let naam = null;
     let peerId = null;
-    
-    if (socket.recovered) {
-      console.log('Recovery successful');
-
-      socket.on('name', (name, id) => {
-        naam = name;
-        peerId = id;
-        console.log(name + " " + peerId);
-      })
-      //socket.broadcast.to(roomId).emit('user-connected', peerId, naam);
-    } else {
-      console.log('New or unrecoverable session');
-    }
 
     socket.on('join-room', (receivedRoomId, receivedPeerId, receivedName) => {
       console.log(receivedPeerId);
@@ -52,8 +39,20 @@ io.on('connection', (socket) => {
 
     });
 
-    socket.on('send-chat-message', (message) => {
-      console.log(roomId);
+        
+    if (socket.recovered) {
+      console.log('Recovery successful');
+
+      socket.on('name', (name, id) => {
+        naam = name;
+        peerId = id;
+        socket.broadcast.to(roomId).emit('user-recovered', naam);
+      });
+    } else {
+      console.log('New or unrecoverable session');
+    }
+
+    socket.on('send-chat-message', message => {
       socket.broadcast.to(roomId).emit('chat-message', {message:message, name: naam}); 
     });
     
@@ -63,7 +62,6 @@ io.on('connection', (socket) => {
 
     //deliberate because there can be disconnections by a ghost and can't close call on those
     socket.on('deliberate-disconnect', (id) => {
-      console.log(id);
       socket.broadcast.to(roomId).emit('deliberate', id);
     });
 

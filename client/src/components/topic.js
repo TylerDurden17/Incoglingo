@@ -5,7 +5,6 @@ import MeetingTime from './timeZone';
 const Topic = () => {
   // State to store the fetched topic and details
   const [topic, setTopic] = useState('');
-  const [topicDetail, setTopicDetail] = useState('');
 
   // Function to fetch the topic and details from the database (you'll need to implement this)
   const fetchTopicFromDatabase = async () => {
@@ -16,7 +15,6 @@ const Topic = () => {
 
       // Update the state with the fetched topic and details
       setTopic('What fictional character do you relate the most to? Why?');
-      setTopicDetail('17 December,');
     } catch (error) {
       console.error('Error fetching topic:', error);
       // // You can set some default or fallback values for the topic and details in case of an error
@@ -37,8 +35,6 @@ const Topic = () => {
   return (
     <div className="topic-container">
       <h3 className="topic">Today's topic: {topic}</h3>
-      <div className="topic-detail">{topicDetail}</div>
-      <MeetingTime/>
       <Questions/>
     </div>
   );

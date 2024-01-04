@@ -1,6 +1,6 @@
 import React from "react";
 import {Button} from 'react-bootstrap';
-import Topic from "./topic";
+import MeetingTime from "./timeZone";
 import { useNavigate } from 'react-router-dom';
 
 function Home() {
@@ -11,10 +11,10 @@ function Home() {
   };
   return (
     <>
-    <div id="home">
+    <div style={{marginTop:'5%'}} id="home">
       <header style={{textAlign: "center"}}>
         <br></br>
-        <div style={{fontSize:'4.5em'}}>Incoglingo</div>
+        <div style={{fontSize:'4.5em', color:'#1A237E'}}>Incoglingo</div>
         <br></br>
       </header>
       <main>
@@ -31,18 +31,22 @@ function Home() {
 
           </article>
           <div>
-      <label>Join the Facebook group:</label> {' '}
-      <a
-        href="https://www.facebook.com/groups/incoglingo/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Incoglingo
-      </a>
-    </div>
-            <div style={{border:'1px solid #555', borderRadius:'16px', padding:'10px', marginTop:'1%'}}>
-            <Topic/>
+            <label>Join the Facebook group:</label> {' '}
+            <a
+              href="https://www.facebook.com/groups/incoglingo/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Incoglingo
+            </a>
+            <hr/>
           </div>
+            <div style={{width: '500px', padding:'10px', marginTop:'1%'}}>
+            <h5 style={{fontWeight: '300'}} className="topic">Topic: {'What fictional character do you relate the most to? Why?'}</h5>
+            <div className="topic-detail">{'5 January,'}</div>
+
+      <MeetingTime/>
+            </div>
         </div>
       </main>
     </div>

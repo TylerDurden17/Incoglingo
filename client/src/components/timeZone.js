@@ -8,8 +8,7 @@ const MeetingTime = () => {
 
     
   // Calculate the target time for 6:30pm UTC
-  const targetTime = new Date();
-  targetTime.setUTCHours(13, 0, 0, 0);
+  const targetDate = new Date('2024-01-05T17:00:00Z');
 
   const CountdownRenderer = ({ days, hours, minutes, seconds }) => {
     return (
@@ -34,7 +33,7 @@ const MeetingTime = () => {
   return (
     <>
       <div> Talk at: <b>{meetingTime}</b> ({zone} timezone)</div>
-      <Countdown date={targetTime} renderer={CountdownRenderer} />
+      <Countdown date={targetDate} renderer={CountdownRenderer} />
     </>
   );
 };

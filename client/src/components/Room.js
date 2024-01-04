@@ -49,9 +49,9 @@ function Room() {
 
     const newSocket = io("http://localhost:8080", {
       transports : ["websocket", "polling"],
-       reconnectionDelay: 10000, // defaults to 1000
-       reconnectionDelayMax: 10000, // defaults to 5000
-       reconnectionAttempts: 5000
+       reconnectionDelay: 1000, // defaults to 1000
+       reconnectionDelayMax: 5000, // defaults to 5000
+       reconnectionAttempts: 5
     });
     // const newSocket = io('https://incoglingo.onrender.com/', {
     //   transports : ['websocket', 'polling'],
@@ -126,7 +126,7 @@ function Room() {
         // Could not recover - rejoin manually
       } else {
         // New socket
-        //recovery fails if the sockeet has not recieved any message
+        //recovery fails if the socket has not recieved any message
         console.log('Failed');
       }
     });
@@ -154,10 +154,10 @@ function Room() {
       );
   }
 
-  const disconnectSocket = () => {
-    console.log('clicked');
-    socket.io.engine.close();
-  };
+  // const disconnectSocket = () => {
+  //   console.log('clicked');
+  //   socket.io.engine.close();
+  // };
   // Render the main UI only after the room has been joined
   return (
     <>
@@ -167,7 +167,6 @@ function Room() {
       <article id="bothchats">
         <div id="inner-audio-chat">
           {peer && socket && (<VideoGrid name={name} newPeer={peer} socket={socket} />)}
-          <button onClick={disconnectSocket}>Disconnect Socket</button>
         </div>
         <div id="texting">
           <div id="texting-child">

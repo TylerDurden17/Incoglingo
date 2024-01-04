@@ -20,6 +20,10 @@ function MessageContainer(props) {
         props.socket.on('user-disconnected', (userId, name) => {
             handleChatMessage({ type: 'user-disconnected', name });
         });
+
+        props.socket.on('user-recovered', (name) => {
+          handleChatMessage({ type: 'user-recovered', name });
+        });
         
         // Cleanup function to remove the event listener. If your component is unmounted 
         // or re-rendered, the event listener will still be active and may continue to
@@ -41,6 +45,11 @@ function MessageContainer(props) {
           setMessages((prevMessages) => [
             ...prevMessages,
             { message: `${name} has joined.`, fromMe: false, sender: '' },
+          ]);
+        } else if (type === 'user-recovered') {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { message: `${name} has reconnected.`, fromMe: false, sender: '' },
           ]);
         } else {
           setMessages((prevMessages) => [
