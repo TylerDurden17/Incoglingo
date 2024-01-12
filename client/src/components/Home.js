@@ -18,7 +18,7 @@ function Home() {
         <br></br>
       </header>
       <main>
-        <div style={{ display: "grid", placeItems: "center" }}>
+        <div id={"intro"}>
           <article style={{ display: "grid", gridTemplateRows: "auto auto", gridRowGap: "10px", alignItems: "center", marginBottom: "10px" }}>
             <section>
               Users can practice speaking English in an audio chat room, with other people.

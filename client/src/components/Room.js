@@ -15,20 +15,26 @@ function Room() {
   const [name, setName] = useState("");
   const [isRoomJoined, setIsRoomJoined] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [myStream, setMyStream] = useState(null);
+
+    
+useEffect(()=>{
+      
+  navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+  .then((stream) => {
+      setMyStream(stream)
+      localStorage.setItem('microphonePermission', true);
+      setModalIsOpen(false);
+  })
+  .catch(error => {
+      console.error('Error answering call.', error);
+      setModalIsOpen(true);
+      localStorage.setItem('microphonePermission', false);
+  });
+}, [])
 
   // Only initialize peer and socket after the user has provided their name
   useEffect(() => {
-    
-    navigator.mediaDevices.getUserMedia({ video: false, audio: true })
-        .then(() => {
-            localStorage.setItem('microphonePermission', true);
-            setModalIsOpen(false);
-        })
-        .catch(error => {
-            console.error('Error answering call.', error);
-            setModalIsOpen(true);
-            localStorage.setItem('microphonePermission', false);
-        });
 
     if(localStorage.getItem('microphonePermission') === null) {
       setModalIsOpen(true);
@@ -78,9 +84,12 @@ function Room() {
 
     // Clean up on component unmount
     return () => {
-      newPeer.destroy();
-      newPeer.disconnect();
-      newSocket.disconnect();
+      if(myStream) {
+        myStream.getTracks().forEach(track => track.stop());
+        newSocket.disconnect();
+        newPeer.destroy();
+        newPeer.disconnect();
+      }
     };
   }, [name, roomId]);
 
@@ -91,6 +100,10 @@ function Room() {
       const enteredName = formData.get("name");
       setName(enteredName); // This will kick-off the peer and socket initialization
     
+  };
+
+  const updateMyStream = (newValue) => {
+    setMyStream(newValue);
   };
 
   // The user will first provide their name before the rest of the UI loads
@@ -166,7 +179,7 @@ function Room() {
       </header>
       <article id="bothchats">
         <div id="inner-audio-chat">
-          {peer && socket && (<VideoGrid name={name} newPeer={peer} socket={socket} />)}
+          {peer && socket && (<VideoGrid updateMyStream={updateMyStream} myStream={myStream} name={name} newPeer={peer} socket={socket} />)}
         </div>
         <div id="texting">
           <div id="texting-child">

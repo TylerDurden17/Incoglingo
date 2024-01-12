@@ -8,7 +8,7 @@ ul{
   align-items: center;
 }
 /* Style for the video */
-.video-list {
+/* .video-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -16,32 +16,26 @@ ul{
   list-style-type: none;
   padding: 0;
   margin: 0;
-}
+} */ 
 
-.video-item {
-  position: relative;
-  border-radius: 10px;
-  width: 120px;
-  height: 120px;
-  margin: 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-}
 
-.video-item p {
-  font-size: 16px;
-  margin-top: 8px;
-  text-align: center;
-  color: #333;
-  font-weight: bold;
+#yourVideo {
+  display: grid;
+  place-items: center;
 }
 
 #muteButton {
+  border: none; /* Remove border */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Add some padding */
+  text-align: center; /* Center text */
+  text-decoration: none; /* Remove underline */
+  display: inline-block; /* Make it inline */
+  font-size: 1.5rem; /* Set font size */
+  cursor: pointer; /* Change cursor to pointer */
+  border-radius: 15px; /* Add some border radius */
+}
+#close-video{
   border: none; /* Remove border */
   color: white; /* White text color */
   padding: 10px 20px; /* Add some padding */
@@ -86,12 +80,34 @@ ul{
 
 /* Desktop styles */
 @media screen and (min-width: 768px) {
+  #intro {
+    display: grid; 
+    place-items: center;
+  }
 
-  #call-handling {
+  .video-item {
+    position: relative;
+    border-radius: 22px;
+    width: 200px;
+    margin: 8px;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    /* align-items: center; */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+  }
+  
+  .video-item p {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  /* #call-handling {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
+  } */
   
   #message-input {
     flex-grow: 1;
@@ -110,8 +126,7 @@ ul{
     align-items: flex-start;
     padding: 2rem;
     background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    height: 100%; /* Set the height to 100% to make sure the container fills the available space */
+    height: 700px; /* Set the height to 100% to make sure the container fills the available space */
     position: relative; /* Set the position to relative to make sure the "Mute" button is positioned relative to this container */
   }
 
@@ -152,6 +167,7 @@ ul{
   }
 
   .video-list {
+    display: flex;
     overflow-y: auto;
     max-height: 500px;
   }
@@ -169,7 +185,6 @@ ul{
   #home {
     margin: 1rem;
   }
-
   #root{
     height: 100vh;
   }
@@ -182,6 +197,7 @@ ul{
     border: 1px solid #ddd;
   }
   #inner-audio-chat {
+    max-height: 350px;
     align-self: flex-start;
     width: 100%;
     position: relative;
@@ -239,19 +255,36 @@ ul{
     width: 95%;
   }
   .video-list {
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: center;
     overflow-y: auto;
-    max-height: 10rem;
+    max-height: 15rem;
   }
   .video-item {
-    width: 6rem;
-    height: 6rem;
-    margin: 8px;
+    border-radius: 22px;
+    width: 150px;
+    margin: 2px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+  }
+  
+  .video-item p {
+    font-size: 14px;
+    text-align: center;
   }
 
   .ModalToDisplayTopic {
     position: relative;
     top: -8px; /* Adjust this value to add the desired top margin */
     left: 0px;
+  }
+
+  #yourVideo{
+    display: grid;
+    place-items: center;
   }
 }
 

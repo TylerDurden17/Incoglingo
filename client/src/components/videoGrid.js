@@ -86,13 +86,11 @@ function VideoGrid(props){
             </button>
             <Topic/>
 
-      </Modal>
-
-      
+      </Modal>      
       <div className="ModalToDisplayTopic">
         <Button onClick={toggleModal}>See Questions</Button>
       </div>
-        <CallHandling name={props.name} newPeer={props.newPeer} socket={props.socket}/>
+        <CallHandling updateMyStream={props.updateMyStream} myStream={props.myStream} name={props.name} newPeer={props.newPeer} socket={props.socket}/>
       </>
     );
 }

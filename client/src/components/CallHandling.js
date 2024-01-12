@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdMic, MdMicOff, MdCallEnd } from "react-icons/md";
+import { MdMic, MdMicOff, MdVideocam, MdVideocamOff, MdCallEnd } from "react-icons/md";
 import Spinner from 'react-bootstrap/Spinner';
+import Button from 'react-bootstrap/Button';
+import MyStream from './myStream';
 
 function CallHandling(props) {
     const navigate = useNavigate();
@@ -11,8 +13,14 @@ function CallHandling(props) {
     const [streams, setStreams] = useState({});
     const [users, setUsers] = useState({});
     const [isMuted, setIsMuted] = useState(false);
-    const [myStream, setMyStream] = useState(null);
+    const [isVideoClose, setIsVideoClose] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
+    
+    // Toggle button handler
+    const toggleVideo = () => {
+        setIsVisible(!isVisible);
+      }
 
     useEffect(() => {
         // Set the srcObject property of each video element
@@ -22,20 +30,7 @@ function CallHandling(props) {
             
     }, [streams]); 
 
-    useEffect(() => {
-        
-        navigator.mediaDevices.getUserMedia({ video: false, audio: true })
-        .then(stream => {
-            setMyStream(stream);
-            // localStorage.setItem('microphonePermission', true);
-            // setModalIsOpen(false);
-        })
-        .catch(error => {
-            console.error('Error answering call.', error);
-            // setModalIsOpen(true);
-            // localStorage.setItem('microphonePermission', false);
-        });
-
+    useEffect(()=>{
         props.socket.on('user-connected', (userId, name) => {
             // The square brackets around userId indicate that its value is a dynamic property name.
             // This syntax is called computed property names and it allows you to dynamically set object property names based on the value of a variable.
@@ -62,14 +57,15 @@ function CallHandling(props) {
             // Disconnect the peer connection and clean up media streams
             props.newPeer.disconnect();
         };
-
     }, []);
+
 
     useEffect(() => {
             
             props.newPeer.on('call', call => {                
                 setAnswerCall(call); //necessary line without it video element wouldn't disappear 
-                call.answer(myStream);
+                
+                call.answer(props.myStream);
                 call.on('stream', incomingStream => {
                     // Add the incoming stream to the streams state
                     setStreams(prevStreams => ({...prevStreams, [call.peer]: {name: call.options.metadata, stream:incomingStream}}));
@@ -108,7 +104,7 @@ function CallHandling(props) {
 
             });
             
-    }, [myStream])
+    }, [props.myStream])
     
     
     function handleClick(userId) {
@@ -120,8 +116,7 @@ function CallHandling(props) {
         }
 
         const options = {metadata: props.name}
-        
-        setCall(props.newPeer.call(userId, myStream, options));
+        setCall(props.newPeer.call(userId, props.myStream, options));
         // to remove the call button after call was made
         setUsers(prevUsers => ({
             ...prevUsers,
@@ -135,8 +130,15 @@ function CallHandling(props) {
     function handleMuteClick() {
         const newIsMuted = !isMuted; // Update isMuted first
         setIsMuted(newIsMuted);
-        myStream.getAudioTracks()[0].enabled = isMuted;
+        props.myStream.getAudioTracks()[0].enabled = isMuted;
     }
+
+    const handleCloseVideo = () => {
+        const newIsVideoMuted = !isVideoClose; // Update isVideoMuted first
+        setIsVideoClose(newIsVideoMuted);
+        props.myStream.getVideoTracks()[0].enabled = isVideoClose;
+    };
+      
 
     function handleEndClick() {
         props.socket.emit('deliberate-disconnect', props.newPeer.id);
@@ -155,7 +157,7 @@ function CallHandling(props) {
                     const match = error.match(/Could not connect to peer ([\w-]+)$/);
                         const dynamicPeerId = match[1];
                         if(call.peer===dynamicPeerId) {
-                            console.log('doogooooooooo');
+                            //console.log('doogooooooooo');
                             call.close();
                         }
                     
@@ -229,7 +231,7 @@ function CallHandling(props) {
                     const match = error.match(/Could not connect to peer ([\w-]+)$/);
                         const dynamicPeerId = match[1];
                         if(answerCall.peer===dynamicPeerId) {
-                            console.log('moogooooooooo');
+                            //console.log('moogooooooooo');
                             answerCall.close();
                         }
                     
@@ -249,41 +251,35 @@ function CallHandling(props) {
 
     return (
         <>
+
             {Object.keys(users).length === 0 && Object.keys(streams).length === 0 ? (
                 <p>Please wait for people to join the room or them to add you</p>
             ) : (
                 <>
                     <div id={"call-handling"}>
 
-                    <ul className="video-list">
+                    <div className="video-list">
                         {Object.values(streams).map((stream, index) => (
                             <React.Fragment key={index}>
                                 <li className="video-item" key={`li-${stream.stream.id}`}>
-                                    <audio ref={el => videoRefs.current[index] = el} autoPlay key={`audio-${stream.stream.id}`}></audio>
-                                    <p>{stream.name} 🔊</p>
+                                    <video ref={el => videoRefs.current[index] = el} autoPlay key={`audio-${stream.stream.id}`}></video>
+                                    <p>{stream.name}</p>
                                 </li>
                             </React.Fragment>
                         ))}
-                    </ul>
+                    </div>
                         {loading ? 
                             <Spinner style={{marginLeft:'30px'}} animation="border" role="status" size="sm">
                                 <span className="visually-hidden">Loading...</span>
                             </Spinner>
                         :<></>}
-                        
-                        <div className="button-container">
 
-                            {Object.keys(streams).length !== 0 && (
-                                <>
-                                    <button id={"muteButton"} onClick={() => handleMuteClick()} style={{
-                                        backgroundColor: isMuted ? '#ea4335' : '#6495ED'
-                                    }}>
-                                        {isMuted ? <MdMicOff /> : <MdMic />}
-                                    </button>
-                                    <button id={"endCall"} onClick={() => handleEndClick()}><MdCallEnd/></button>
-                                </>
-                            )}
+                        <div>
+                            
+                            <div className="button-container">
 
+
+                            </div>
                         </div>
                     </div>
 
@@ -300,6 +296,32 @@ function CallHandling(props) {
 
                 </>
             )}
+            <div id={"yourVideo"}>
+                <Button variant="secondary" onClick={toggleVideo}>toggle your video</Button>
+                {isVisible && 
+                    <MyStream myStream={props.myStream}/>
+                }
+            </div>
+            <div id='yourVideo'>
+                <div className='button-container'>
+                    <button id={"muteButton"} onClick={handleMuteClick} style={{
+                        backgroundColor: isMuted ? '#ea4335' : '#6495ED'
+                    }}>
+                        {isMuted ? <MdMicOff /> : <MdMic />}
+                    </button>
+
+                    <button id={"close-video"} onClick={handleCloseVideo} style={{
+                        backgroundColor: isVideoClose ? '#ea4335':'#6495ED'
+                    }}>
+                        {isVideoClose ? <MdVideocamOff />:<MdVideocam/>}
+                    </button>
+                    {Object.keys(streams).length !== 0 && (
+                        <>
+                            <button id={"endCall"} onClick={handleEndClick}><MdCallEnd/></button>
+                        </>
+                    )}
+                </div>
+            </div>
         </>
       );
       
