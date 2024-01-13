@@ -183,9 +183,9 @@ useEffect(()=>{
         </div>
         <div id="texting">
           <div id="texting-child">
-            {isRoomJoined && <p>Welcome.</p>}
             {socket && <MessageContainer socket={socket} />}
           </div>
+            {/* {isRoomJoined && <p style={{color: "red"}}>Welcome.</p>} */}
         </div>
       </article>
     </>

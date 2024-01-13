@@ -41,7 +41,7 @@ function Home() {
             </a>
             <hr/>
           </div>
-            <div style={{width: '500px', padding:'10px', marginTop:'1%'}}>
+            <div style={{padding:'10px', marginTop:'1%'}}>
             <h5 style={{fontWeight: '300'}} className="topic">Topic: {'What fictional character do you relate the most to? Why?'}</h5>
             <div className="topic-detail">{'5 January,'}</div>
 

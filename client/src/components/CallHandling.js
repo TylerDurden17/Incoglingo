@@ -89,7 +89,6 @@ function CallHandling(props) {
 
                 props.socket.on('deliberate', (id) => {
                     if(call.peer===id){
-                        console.log('told by server');
                         call.close();
                     }
                 });
@@ -192,10 +191,8 @@ function CallHandling(props) {
                 // }, 10000)
             });
             props.socket.on('deliberate', (id) => {
-                console.log('deliv');
                 
                 if(call.peer===id){
-                    console.log('told by server');
                     call.close();
                 }
             });
@@ -213,8 +210,6 @@ function CallHandling(props) {
             });
 
             call.on('close', () => {
-
-                console.log('call peer was destroyed');
                 setStreams((prevStreams) => {
                     const newStreams = { ...prevStreams };
                     delete newStreams[call.peer];
@@ -238,7 +233,6 @@ function CallHandling(props) {
                 }  
             });
             answerCall.on('close', () => {
-                console.log('ans peer was destroyed');
                 setStreams((prevStreams) => {
                     const newStreams = { ...prevStreams };
                     delete newStreams[answerCall.peer];
@@ -283,7 +277,7 @@ function CallHandling(props) {
                         </div>
                     </div>
 
-                    <div style={{marginTop:"20px"}} id={"buttonsThatAddPeers"}>
+                    <div id={"buttonsThatAddPeers"}>
                         {Object.keys(users).map((userId) => (
                             users[userId].status === false && (
                                 <div className={"parent-call-button"} key={userId}>

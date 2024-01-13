@@ -8,7 +8,7 @@ const MeetingTime = () => {
 
     
   // Calculate the target time for 6:30pm UTC
-  const targetDate = new Date('2024-01-05T17:00:00Z');
+  const targetDate = new Date('2024-01-13T17:00:00Z');
 
   const CountdownRenderer = ({ days, hours, minutes, seconds }) => {
     return (
