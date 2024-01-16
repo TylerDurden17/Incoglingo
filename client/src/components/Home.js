@@ -21,7 +21,7 @@ function Home() {
         <div id={"intro"}>
           <article style={{ display: "grid", gridTemplateRows: "auto auto", gridRowGap: "10px", alignItems: "center", marginBottom: "10px" }}>
             <section>
-              Users can practice speaking English in an audio chat room, with other people.
+              Practice speaking English in an audio chat room, with other people.
             </section>
             <div style={{ display: "grid", justifyItems: "start" }}>
               <Button id="createRoomButton" onClick={createRoom}>
