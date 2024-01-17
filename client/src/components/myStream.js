@@ -11,7 +11,7 @@ function MyStream(props) {
 
   return (
     <>
-          <video className="video-item" ref={videoRef} autoPlay></video>
+          <video className="video-item" ref={videoRef} autoPlay muted></video>
           <p>You</p>
     </>
   );
