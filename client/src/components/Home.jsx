@@ -1,10 +1,23 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {Button} from 'react-bootstrap';
 import MeetingTime from "./timeZone";
 import { useNavigate } from 'react-router-dom';
+import GoogleSignIn from "../auth/GoogleSignIn";
+import { FcGoogle } from "react-icons/fc";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 function Home() {
   const navigate = useNavigate();
+  const auth = getAuth();
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if(user){
+        navigate('/dashboard');
+      }
+    });
+    return () => unsubscribe();
+}, []);
+
   const createRoom = () => {
     //const roomId = '4460ac02-28dc-491d-962e-f32897521715';
     navigate(`/room`);
@@ -23,6 +36,12 @@ function Home() {
             <section>
               Practice speaking English in an audio chat room, with other people.
             </section>
+            <div style={{display:"flex", alignItems: "center", border: "1px solid #e7e7e7", width: "fit-content", borderRadius: "20px", padding: "6px 5px", 
+                          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)"
+                        }}>
+              <FcGoogle style={{fontSize:"x-large"}}/>
+              <GoogleSignIn/>
+            </div>
             <div style={{ display: "grid", justifyItems: "start" }}>
               <Button id="createRoomButton" onClick={createRoom}>
                 Join Room

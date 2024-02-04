@@ -1,3 +1,6 @@
 peer/
 client/node_modules/
 server/node_modules/
+client/vite-env.d.ts
+client/vite.config.ts
+server/incoglingo-db15003bd346.json

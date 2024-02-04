@@ -1,8 +1,14 @@
 const express = require('express');
 require('dotenv').config()
+const cors = require("cors");
 const app = express();
 //create a server to use with socket io
 const server = require('http').createServer(app);
+
+const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
+const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
+
+
 const io = require('socket.io')(server, {
     connectionStateRecovery: {
       // the backup duration of the sessions and the packets
@@ -13,7 +19,24 @@ const io = require('socket.io')(server, {
   }
 )
 
+app.use(cors());
 const port = process.env.PORT || 8080;
+
+const serviceAccount = require('./incoglingo-db15003bd346.json');
+
+initializeApp({
+  credential: cert(serviceAccount)
+});
+
+const db = getFirestore();
+
+
+app.use(express.json());
+// Parse URL-encoded data and multipart forms
+app.use(express.urlencoded({ extended: true }));
+
+
+//====================================================================================
 
 // Declare global variables to store the parameters so after recovery I still have
 // roomId, id since i don't want to join room again
@@ -65,6 +88,46 @@ io.on('connection', (socket) => {
       socket.broadcast.to(roomId).emit('deliberate', id);
     });
 
+});
+
+app.post('/sendProfileData', async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  const { uid, formData } = req.body;
+  console.log(req.body);
+  // Perform further processing with the extracted data
+  // For example, save the user profile to a database
+  // try {
+  //   const docRef = db.collection('users').doc(uid);
+  //   // if you want to update only specific fields of an existing document
+  //   // without overwriting the entire document, use merge.
+  //   await docRef.set(formData, { merge: true });
+
+  //   res.json({ success: true, documentId: docRef.id });
+  // } catch (error) {
+  //   console.error('Error adding document: ', error);
+  //   res.status(500).json({ success: false, error: 'Internal Server Error' });
+  // }
+});
+
+app.get("/getProfileData/:uid", async (req, res) => {
+  const uid = `${req.params.uid}`;
+  // try {
+  //   // Retrieve the document from Firestore based on the given uid
+  //   const profile = db.collection('users').doc(uid);
+  //   const doc = await profile.get();
+  //   if (!doc.exists) {
+  //     return res.status(404).send({ message: 'No such document!' });
+  //   }  else {
+  //     console.log('Document data:', doc.data());
+  //   }
+    
+  //   // Send the document data back to the client
+  //   res.send(doc.data());
+
+  // } catch (err) {
+  //   console.error(err);
+  //   res.status(500).send("Internal Server Error");
+  // }
 });
 
 server.listen(port, () => {
