@@ -20,12 +20,12 @@ export default function Navbar() {
   return (
     <>
       <nav className="nav">
-        <Link to="/" className="site-title">
+        <Link to="/home" className="site-title">
           Incoglingo
         </Link>
         <ul>
           <CustomLink to="/profile">Profile</CustomLink>
-        </ul>
+        </ul> 
       </nav>
 
       <Outlet context={user}/>

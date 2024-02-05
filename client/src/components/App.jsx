@@ -20,7 +20,7 @@ return(
 
       <Route element={<Navbar/>}>
 
-        <Route index element={<Dashboard />} />
+        <Route path='/home' element={<Dashboard />} />
         
         <Route path="profile">
 

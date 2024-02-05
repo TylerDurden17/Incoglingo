@@ -1,19 +1,19 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {Button} from 'react-bootstrap';
 import MeetingTime from "./timeZone";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import GoogleSignIn from "../auth/GoogleSignIn";
 import { FcGoogle } from "react-icons/fc";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 function Home() {
   const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
   const auth = getAuth();
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if(user){
-        navigate('/dashboard');
-      }
+      setIsAuthenticated(!!user);
+      console.log('hi');
     });
     return () => unsubscribe();
 }, []);
@@ -22,7 +22,8 @@ function Home() {
     //const roomId = '4460ac02-28dc-491d-962e-f32897521715';
     navigate(`/room`);
   };
-  return (
+
+  const login = (
     <>
     <div style={{marginTop:'5%'}} id="home">
       <header style={{textAlign: "center"}}>
@@ -73,6 +74,13 @@ function Home() {
 
     </>
   );
+
+  return isAuthenticated !== null ? (
+    /* standard behavior to The Outlet it should not take any props */
+      isAuthenticated ? <Navigate to="/home" /> : login
+    ) : (
+      <p>Loading...</p>
+    );
 }
 
 export default Home;

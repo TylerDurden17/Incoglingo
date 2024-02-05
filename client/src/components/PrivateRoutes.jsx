@@ -11,10 +11,13 @@ const PrivateRoutes = () => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
           setIsAuthenticated(!!user);
           setUser(user);
+          console.log(user);
         });
+
+        console.log('am I being rep');
     
         return () => unsubscribe();
-    }, [auth]);
+    }, []);
 
     return isAuthenticated !== null ? (
       /* standard behavior to The Outlet it should not take any props */

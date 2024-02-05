@@ -4,3 +4,4 @@ server/node_modules/
 client/vite-env.d.ts
 client/vite.config.ts
 server/incoglingo-db15003bd346.json
+client/src/auth/firebaseConfig.jsx

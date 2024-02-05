@@ -1,9 +1,7 @@
 import React from 'react';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
 
 const GoogleSignIn = () => {
-  const navigate = useNavigate();
   const auth = getAuth();
   const provider = new GoogleAuthProvider();
 
@@ -20,7 +18,7 @@ const GoogleSignIn = () => {
       const user = result.user;
 
       // Redirect to the dashboard after successful sign-in
-      navigate('/dashboard'); 
+      // navigate('/dashboard'); 
 
       // IdP data available using getAdditionalUserInfo(result)
       // ...
