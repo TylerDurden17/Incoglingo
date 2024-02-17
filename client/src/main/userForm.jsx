@@ -55,7 +55,7 @@ function UserForm() {
         }
 
     };
-
+    //fetch data in the fields
     useEffect(() => {
         const fetchData = async () => {
             const response = await fetch(`http://localhost:8080/getProfileData/${user.uid}`, {
@@ -79,6 +79,7 @@ function UserForm() {
         fetchData();
     }, []); 
 
+    //don't enable submit until atleast one field is filled
     useEffect(() => {
         const anyFieldChanged = Object.values(formData).some(
             (value) => value.trim() !== ''

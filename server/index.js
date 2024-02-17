@@ -5,6 +5,8 @@ const app = express();
 //create a server to use with socket io
 const server = require('http').createServer(app);
 
+const admin = require('firebase-admin');
+
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
 
@@ -15,7 +17,7 @@ const io = require('socket.io')(server, {
       maxDisconnectionDuration: 2 * 60 * 1000,
       // whether to skip middlewares upon successful recovery
       skipMiddlewares: true,
-    }
+    } 
   }
 )
 
@@ -30,13 +32,12 @@ initializeApp({
 
 const db = getFirestore();
 
-
 app.use(express.json());
 // Parse URL-encoded data and multipart forms
 app.use(express.urlencoded({ extended: true }));
 
 
-//====================================================================================
+// ================================
 
 // Declare global variables to store the parameters so after recovery I still have
 // roomId, id since i don't want to join room again
@@ -109,6 +110,35 @@ app.post('/sendProfileData', async (req, res) => {
   // }
 });
 
+app.post('/sendSessionData', async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  //console.log(req.body);
+  const uid = req.body.id;
+  try {
+    admin.auth().getUser(`${uid}`)
+    .then((userRecord) => {
+
+        const customClaims = userRecord.customClaims;
+
+        if (customClaims && customClaims.admin === true) {
+            //console.log('User is an admin');
+            console.log(req.body);
+        } else {
+            console.log('User is not an admin');
+        }
+    })
+    .catch((error) => {
+        console.error('Error fetching user data:', error);
+    });
+    // const docRef = db.collection('sessions').doc(uid);
+    // await docRef.set(req.body);
+    // res.status(200).json({ message: 'Session data saved successfully.' });
+  } catch (error) {
+    console.error("Error storing session data:", error);
+    res.status(500).json({ error: 'An error occurred while saving session data.' });
+  }
+});
+
 app.get("/getProfileData/:uid", async (req, res) => {
   const uid = `${req.params.uid}`;
   // try {
@@ -142,3 +172,4 @@ server.listen(port, () => {
       
     }
 });
+

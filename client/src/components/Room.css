@@ -7,6 +7,12 @@ ul{
   justify-content: center;
   align-items: center;
 }
+#intro {
+  padding: 15px;
+  border-radius: 25px;
+  margin: auto;
+  width: fit-content;
+}
 /* Style for the video */
 /* .video-list {
   display: flex;

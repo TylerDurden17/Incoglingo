@@ -13,7 +13,6 @@ function Home() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsAuthenticated(!!user);
-      console.log('hi');
     });
     return () => unsubscribe();
 }, []);
@@ -27,22 +26,25 @@ function Home() {
     <>
     <div style={{marginTop:'5%'}} id="home">
       <header style={{textAlign: "center"}}>
-        <br></br>
-        <div style={{fontSize:'4.5em', color:'#1A237E'}}>Incoglingo</div>
-        <br></br>
+        <br/>
+        <div style={{fontSize:'4em', color:'#1A237E'}}>Incoglingo</div>
       </header>
+
+      <div style={{display:"flex", alignItems: "center", border: "1px solid #e7e7e7", 
+                    width: "fit-content", borderRadius: "20px", padding: "6px 5px", 
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)", margin: "28px auto 40px"
+                  }}>
+        <FcGoogle style={{fontSize:"x-large"}}/>
+        <GoogleSignIn/>
+      </div>
+
       <main>
         <div id={"intro"}>
           <article style={{ display: "grid", gridTemplateRows: "auto auto", gridRowGap: "10px", alignItems: "center", marginBottom: "10px" }}>
-            <section>
+         
+          <hr/>   <section>
               Practice speaking English in an audio chat room, with other people.
             </section>
-            <div style={{display:"flex", alignItems: "center", border: "1px solid #e7e7e7", width: "fit-content", borderRadius: "20px", padding: "6px 5px", 
-                          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)"
-                        }}>
-              <FcGoogle style={{fontSize:"x-large"}}/>
-              <GoogleSignIn/>
-            </div>
             <div style={{ display: "grid", justifyItems: "start" }}>
               <Button id="createRoomButton" onClick={createRoom}>
                 Join Room
@@ -77,7 +79,7 @@ function Home() {
 
   return isAuthenticated !== null ? (
     /* standard behavior to The Outlet it should not take any props */
-      isAuthenticated ? <Navigate to="/home" /> : login
+      isAuthenticated ? <Navigate to="/home" replace={true}/> : login
     ) : (
       <p>Loading...</p>
     );
