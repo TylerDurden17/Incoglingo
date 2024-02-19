@@ -9,6 +9,7 @@ import Profile from "../main/pages/Profile"
 import UserForm from "../main/userForm"
 import Navbar from '../main/Navbar';
 import Tutor from '../tutor/tutor';
+import CreateSessionItem from '../tutor/createSessionItem';
 
 function App() {
 return(
@@ -32,7 +33,12 @@ return(
 
         </Route>
         
-        <Route path="/tutor" element={<Tutor />} />
+        <Route path="partner">
+
+          <Route index element={<Tutor />} />
+          <Route path="createsession" element={<CreateSessionItem />} />
+
+        </Route>
 
       </Route>
 

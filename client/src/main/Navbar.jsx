@@ -1,5 +1,5 @@
 import { Link, Outlet, useMatch, useResolvedPath, useOutletContext } from "react-router-dom"
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import "./navStyle.css"
 
 function CustomLink({ to, children, ...props }) {
@@ -16,7 +16,21 @@ function CustomLink({ to, children, ...props }) {
 }
 
 export default function Navbar() {
+  const [admin, setAdmin] = useState(false);
   const user = useOutletContext();
+
+  useEffect(() => {
+
+    user.getIdTokenResult()
+    .then((idTokenResult) => {
+       // Confirm the user is an Admin.
+       setAdmin(!!idTokenResult.claims.admin);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }, [])
+
   return (
     <>
       <nav className="nav">
@@ -24,6 +38,9 @@ export default function Navbar() {
           Incoglingo
         </Link>
         <ul>
+          {admin && (
+            <CustomLink to="/partner">Partner Dashboard</CustomLink>
+          )}
           <CustomLink to="/profile">Profile</CustomLink>
         </ul> 
       </nav>

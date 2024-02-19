@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import CountryList from "react-select-country-list";
 import {Button} from 'react-bootstrap';
 import { useOutletContext } from 'react-router-dom';
+import {ToastContainer, toast, Bounce} from '../toast'
 
 function UserForm() {
     const user = useOutletContext();
@@ -47,10 +48,47 @@ function UserForm() {
             if (response.ok) {
                 const result = await response.json();
                 console.log('Data added to Firestore:', result);
-            } else {
+                const notify = () => toast.success('Profile data added', {
+                    position: "bottom-center",
+                    autoClose: 2500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Bounce
+                  });
+                  notify();
+            } 
+            else {
+                const notify = () => toast.error('Profile data not added', {
+                    position: "bottom-center",
+                    autoClose: 2500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Bounce
+                  });
+                  notify();
                 console.error('Failed to add data to Firestore:', response.statusText);
             }
         } catch (error) {
+            const notify = () => toast.error('Profile data not added', {
+                position: "bottom-center",
+                autoClose: 2500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Bounce
+              });
+              notify();
             console.error('Error while adding data to Firestore:', error);
         }
 
@@ -89,6 +127,7 @@ function UserForm() {
 
     return(
     <> 
+    <ToastContainer/>
         <form name="userForm" method="post" onSubmit={handleSubmit} style={{border: "1px solid", borderColor: "#6666665e", borderRadius: "21px", padding: '20px', maxWidth: '500px', margin: '1rem auto' }}> 
             <strong style={{ display: 'block', marginBottom: '10px' }}>Complete your profile:</strong>
             <div style={{ marginBottom: '10px' }}>

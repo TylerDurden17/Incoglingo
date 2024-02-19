@@ -1,24 +1,22 @@
 import React from "react";
 import { Button } from "react-bootstrap";
-import CreateSessionItem from "./createSessionItem";
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Tutor() {
 
-  const user = useOutletContext();
-
+  const navigate = useNavigate();
   const createSessionItem = () => {
     // TODO: Redirect to the session item page
+    navigate('createsession');
 
   }
-
+  
   return (
     <>
-        <h1>Tutor</h1>
-        <Button variant="secondary" onClick={createSessionItem}>Create Session Item</Button>
+    <div style={{margin:'2rem'}} id="home">
+      <Button variant="secondary" onClick={createSessionItem}>Create Session Item</Button>
+    </div>
         
-        <CreateSessionItem user={user} />
-
     </>
   )
 }

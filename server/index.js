@@ -97,17 +97,17 @@ app.post('/sendProfileData', async (req, res) => {
   console.log(req.body);
   // Perform further processing with the extracted data
   // For example, save the user profile to a database
-  // try {
-  //   const docRef = db.collection('users').doc(uid);
-  //   // if you want to update only specific fields of an existing document
-  //   // without overwriting the entire document, use merge.
-  //   await docRef.set(formData, { merge: true });
+  try {
+    // const docRef = db.collection('users').doc(uid);
+    // // if you want to update only specific fields of an existing document
+    // // without overwriting the entire document, use merge.
+    // await docRef.set(formData, { merge: true });
 
-  //   res.json({ success: true, documentId: docRef.id });
-  // } catch (error) {
-  //   console.error('Error adding document: ', error);
-  //   res.status(500).json({ success: false, error: 'Internal Server Error' });
-  // }
+    // res.json({ success: true, documentId: docRef.id });
+  } catch (error) {
+    console.error('Error adding document: ', error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
 });
 
 app.post('/sendSessionData', async (req, res) => {
@@ -121,18 +121,19 @@ app.post('/sendSessionData', async (req, res) => {
         const customClaims = userRecord.customClaims;
 
         if (customClaims && customClaims.admin === true) {
-            //console.log('User is an admin');
-            console.log(req.body);
+            console.log('User is an admin');
+            // console.log(req.body);
+            // const docRef = db.collection('sessions').doc(uid);
+            // await docRef.set(req.body);
+            res.status(200).json({ message: 'Session data saved successfully.' });
         } else {
             console.log('User is not an admin');
+            res.status(403).json({ error: 'User is not authorized to perform this action.' });
         }
     })
     .catch((error) => {
         console.error('Error fetching user data:', error);
     });
-    // const docRef = db.collection('sessions').doc(uid);
-    // await docRef.set(req.body);
-    // res.status(200).json({ message: 'Session data saved successfully.' });
   } catch (error) {
     console.error("Error storing session data:", error);
     res.status(500).json({ error: 'An error occurred while saving session data.' });
