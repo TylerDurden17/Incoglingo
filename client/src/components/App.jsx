@@ -6,6 +6,7 @@ import ErrorPage from './error';
 import Dashboard from "../main/dashboard";
 import PrivateRoutes from './PrivateRoutes';
 import Profile from "../main/pages/Profile"
+import Profiles from "../main/pages/profiles"
 import UserForm from "../main/userForm"
 import Navbar from '../main/Navbar';
 import Tutor from '../tutor/tutor';
@@ -26,6 +27,8 @@ return(
 
         <Route path='/home' element={<Dashboard />} />
         
+        <Route path="/:userId" element={<Profiles />} />
+
         <Route path="profile">
 
           <Route index element={<Profile />} />

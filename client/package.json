@@ -5,6 +5,7 @@
   "dependencies": {
     "@vitejs/plugin-react": "^4.2.1",
     "bootstrap": "^5.2.3",
+    "disqus-react": "^1.1.5",
     "firebase": "^10.7.2",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
@@ -16,6 +17,7 @@
     "react-ga4": "^2.1.0",
     "react-icons": "^4.8.0",
     "react-modal": "^3.16.1",
+    "react-razorpay": "^2.0.1",
     "react-router-dom": "^6.8.2",
     "react-select-country-list": "^2.2.3",
     "react-toastify": "^10.0.4",

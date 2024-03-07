@@ -1,10 +1,9 @@
   .nav {
-    background-color: #333;
-    color: white;
     justify-content: space-between;
     align-items: stretch;
     gap: 2rem;
     padding: 0 1rem;
+    border-bottom: 1px solid #DDD;
   }
   
   .site-title {
@@ -16,7 +15,7 @@
     padding: 0;
     margin: 0;
     list-style: none;
-    gap: 1rem;
+    gap: 2rem;
   }
   
   .nav a {
@@ -29,9 +28,7 @@
   }
   
   .nav li.active {
-    background-color: #555;
+    border-bottom: 2px solid;
+    font-weight: 500;
   }
   
-  .nav li:hover {
-    background-color: #777;
-  }

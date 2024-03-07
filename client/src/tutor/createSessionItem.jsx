@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {ToastContainer, toast, Bounce} from '../toast'
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useOutletContext } from 'react-router-dom';
 
 function CreateSessionItem() {
@@ -41,7 +42,7 @@ function CreateSessionItem() {
         if (response.ok) {
             const notify = () => toast.success('Session data posted', {
               position: "bottom-center",
-              autoClose: 2500,
+              autoClose: 3000,
               hideProgressBar: false,
               closeOnClick: true,
               pauseOnHover: true,

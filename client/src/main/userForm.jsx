@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import CountryList from "react-select-country-list";
 import {Button} from 'react-bootstrap';
 import { useOutletContext } from 'react-router-dom';
-import {ToastContainer, toast, Bounce} from '../toast'
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function UserForm() {
     const user = useOutletContext();

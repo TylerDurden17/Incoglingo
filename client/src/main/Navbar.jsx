@@ -18,6 +18,7 @@ function CustomLink({ to, children, ...props }) {
 export default function Navbar() {
   const [admin, setAdmin] = useState(false);
   const user = useOutletContext();
+  
 
   useEffect(() => {
 
@@ -41,7 +42,15 @@ export default function Navbar() {
           {admin && (
             <CustomLink to="/partner">Partner Dashboard</CustomLink>
           )}
-          <CustomLink to="/profile">Profile</CustomLink>
+          <CustomLink to="/profile">
+              
+              <img referrerPolicy="no-referrer" 
+                style={{borderRadius: "50%", maxWidth:"2rem", marginRight:"0.5rem"}} src={user.photoURL} 
+                  alt={user.displayName} 
+              />
+              Profile
+            
+          </CustomLink>
         </ul> 
       </nav>
 

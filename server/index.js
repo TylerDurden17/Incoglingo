@@ -10,6 +10,13 @@ const admin = require('firebase-admin');
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
 
+const Razorpay = require('razorpay');
+
+let razorpayInstance = new Razorpay({
+  key_id: 'rzp_live_zVNgag0wyghXm0', // Replace with your actual Razorpay API key
+  key_secret: 'Mtj3FhFNu8YBxZmIVJfywyb2', // Replace with your actual Razorpay API secret
+});
+
 
 const io = require('socket.io')(server, {
     connectionStateRecovery: {
@@ -103,7 +110,7 @@ app.post('/sendProfileData', async (req, res) => {
     // // without overwriting the entire document, use merge.
     // await docRef.set(formData, { merge: true });
 
-    // res.json({ success: true, documentId: docRef.id });
+     res.json({ success: true});
   } catch (error) {
     console.error('Error adding document: ', error);
     res.status(500).json({ success: false, error: 'Internal Server Error' });
@@ -124,7 +131,7 @@ app.post('/sendSessionData', async (req, res) => {
             console.log('User is an admin');
             // console.log(req.body);
             // const docRef = db.collection('sessions').doc(uid);
-            // await docRef.set(req.body);
+            // docRef.set(req.body);
             res.status(200).json({ message: 'Session data saved successfully.' });
         } else {
             console.log('User is not an admin');
@@ -160,6 +167,44 @@ app.get("/getProfileData/:uid", async (req, res) => {
   //   res.status(500).send("Internal Server Error");
   // }
 });
+
+// Example teacher data
+const teachers = [
+  {
+    id:  2,
+    name: 'Tyler Durden',
+    bio: 'Experienced in catology.',
+    photo: 'https://api.slingacademy.com/public/sample-users/2.png',
+  },
+];
+
+// Route to get all teachers
+app.get('/teachers', (req, res) => {
+  res.json(teachers);
+});
+
+
+app.post('/create-subscription', async (req, res) => {
+
+  const { planId } = req.body;
+  const startDate = new Date('April 1, 2024 00:00:00 GMT+0000');
+  const startAtUnixTimestamp = Math.floor(startDate.getTime() / 1000); // Convert milliseconds to seconds
+ 
+  const options = {
+    plan_id: planId,
+    total_count: 12, // e.g., for a yearly subscription with monthly billing
+    start_at: startAtUnixTimestamp
+  };
+  try {
+    const subscription = await razorpayInstance.subscriptions.create(options);
+    res.json(subscription);
+  } catch (error) {
+    res.status(500).send(error);
+    console.log(error);
+  }
+
+});
+
 
 server.listen(port, () => {
   console.log(`running on port ${port}`);

@@ -8,7 +8,7 @@ import io from "socket.io-client";
 import Spinner from 'react-bootstrap/Spinner';
 import Modal from "react-modal";
 
-function Room() {
+function  Room() {
   const roomId = 'room';
   const [peer, setPeer] = useState(null);
   const [socket, setSocket] = useState(null);
