@@ -16,22 +16,41 @@ function  Room() {
   const [isRoomJoined, setIsRoomJoined] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [myStream, setMyStream] = useState(null);
+  const [activeTab, setActiveTab] = useState('tabA');
+  const [width, setWidth] = useState(window.innerWidth);
+  const [newMessages, setNewMessages] = useState(false);
 
+  function handleWindowSizeChange() {
+    setWidth(window.innerWidth);
+  }
     
-useEffect(() => {
-      
-  navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-  .then((stream) => {
-      setMyStream(stream)
-      localStorage.setItem('microphonePermission', true);
-      setModalIsOpen(false);
-  })
-  .catch(error => {
-      console.error('Error answering call.', error);
-      setModalIsOpen(true);
-      localStorage.setItem('microphonePermission', false);
-  });
-}, [])
+  useEffect(() => {
+        
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    .then((stream) => {
+        setMyStream(stream)
+        localStorage.setItem('microphonePermission', true);
+        setModalIsOpen(false);
+    })
+    .catch(error => {
+        console.error('Error answering call.', error);
+        setModalIsOpen(true);
+        localStorage.setItem('microphonePermission', false);
+    });
+    window.addEventListener('resize', handleWindowSizeChange);
+    return () => {
+      window.removeEventListener('resize', handleWindowSizeChange);
+    }
+  }, []);
+
+  const isMobile = width <= 768;
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    if (activeTab==='tabB' && tab === 'tabA' && newMessages) {
+      setNewMessages(false);
+    }
+  };
 
   // Only initialize peer and socket after the user has provided their name
   useEffect(() => {
@@ -75,6 +94,10 @@ useEffect(() => {
     newSocket.on('joined', () => {
       setIsRoomJoined(true); // Room is now joined
     })
+
+    newSocket.on('chat-message', () => {
+      setNewMessages(true)
+    });
 
 
     setPeer(newPeer);
@@ -175,7 +198,40 @@ useEffect(() => {
       <header>
         <h4 id="groupName">Incoglingo</h4>
       </header>
-      <article id="bothchats">
+      <div className="tabs">
+      {isMobile ? (
+        // Mobile Layout
+        <div className="mobile-layout">
+          <div className="tab-header">
+            <button
+              className={`tab-button ${activeTab === 'tabA' ? 'active' : ''}`}
+              onClick={() => handleTabClick('tabA')}
+            >
+              Video
+            </button>
+            <button
+              className={`tab-button ${activeTab === 'tabB' ? 'active' : ''}`}
+              onClick={() => handleTabClick('tabB')}
+            >
+              Texting
+              {activeTab !== 'tabB' && newMessages && <span><sup> 🔴</sup></span>}
+            </button>
+            {/* Add more tab buttons as needed */}
+          </div>
+          
+          <div className="tab-content">
+            <div className={`tab-pane ${activeTab === 'tabA' ? 'active' : 'hidden'}`}>
+              {peer && socket && (<VideoGrid updateMyStream={updateMyStream} myStream={myStream} name={name} newPeer={peer} socket={socket} />)}
+            </div>
+            <div className={`tab-pane ${activeTab === 'tabB' ? 'active' : 'hidden'}`}>
+              {socket && <MessageContainer socket={socket} />}
+            </div>
+          </div>
+        </div>
+      ) : (
+        // Desktop Layout
+        <div className="desktop-layout">
+          <article id="bothchats">
         <div id="inner-audio-chat">
           {peer && socket && (<VideoGrid updateMyStream={updateMyStream} myStream={myStream} name={name} newPeer={peer} socket={socket} />)}
         </div>
@@ -186,6 +242,11 @@ useEffect(() => {
             {/* {isRoomJoined && <p style={{color: "red"}}>Welcome.</p>} */}
         </div>
       </article>
+          {/* Add more content sections as needed */}
+        </div>
+      )}
+    </div>
+      
     </>
   );
 }

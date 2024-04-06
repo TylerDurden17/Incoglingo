@@ -1,0 +1,50 @@
+/* Desktop styles */
+@media (min-width: 768px) {
+  .sessionList {
+    position: fixed;
+    right: 0;
+    padding-right: 15px;
+    font-size: 16px;
+  }
+
+  .thehome {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+  }
+
+  .discussion-embed,
+  .select-partners {
+    width: 48%;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+  .sessionList {
+    position: fixed;
+    right: 0;
+    padding-right: 10px;
+    font-size: 14px;
+  }
+
+  .thehome {
+    margin-top: 40px;
+  }
+
+  .discussion-embed,
+  .select-partners {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  footer {
+    position: relative;
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  footer button {
+    margin: 0 5px;
+  }
+}

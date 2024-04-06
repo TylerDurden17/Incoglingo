@@ -15,7 +15,7 @@ function CallHandling(props) {
     const [isMuted, setIsMuted] = useState(false);
     const [isVideoClose, setIsVideoClose] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
     
     // Toggle button handler
     const toggleVideo = () => {
@@ -290,11 +290,11 @@ function CallHandling(props) {
 
                 </>
             )}
-            <div id={"yourVideo"}>
-                <Button variant="secondary" onClick={toggleVideo}>toggle your video</Button>
+            <div style={{marginTop:"20px"}} id={"yourVideo"}>
                 {isVisible && 
                     <MyStream myStream={props.myStream}/>
                 }
+                <Button variant="secondary" onClick={toggleVideo}>show/hide your video</Button>
             </div>
             <div id='yourVideo'>
                 <div className='button-container'>

@@ -195,13 +195,13 @@ app.post('/create-subscription', async (req, res) => {
     total_count: 12, // e.g., for a yearly subscription with monthly billing
     start_at: startAtUnixTimestamp
   };
-  try {
-    const subscription = await razorpayInstance.subscriptions.create(options);
-    res.json(subscription);
-  } catch (error) {
-    res.status(500).send(error);
-    console.log(error);
-  }
+  // try {
+  //   const subscription = await razorpayInstance.subscriptions.create(options);
+  //   res.json(subscription);
+  // } catch (error) {
+  //   res.status(500).send(error);
+  //   console.log(error);
+  // }
 
 });
 
