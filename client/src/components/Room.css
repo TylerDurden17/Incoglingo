@@ -403,7 +403,6 @@ ul{
 
   .tab-header {
     display: flex;
-    margin-top: 20px;
     background-color: #e7e5e5;
     border: 1px solid #ccc;
     border-bottom: none;
@@ -415,7 +414,7 @@ ul{
     border: none;
     background-color: transparent;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition:ease;
     flex: 1;
     text-align: center;
   }

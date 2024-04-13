@@ -24,27 +24,18 @@
   .sessionList {
     position: fixed;
     right: 0;
+    border:1px solid red;
     padding-right: 10px;
     font-size: 14px;
   }
 
   .thehome {
-    margin-top: 40px;
+    border:1px solid red;
   }
 
   .discussion-embed,
   .select-partners {
     width: 100%;
     margin-bottom: 20px;
-  }
-
-  footer {
-    position: relative;
-    text-align: center;
-    padding: 10px 0;
-  }
-
-  footer button {
-    margin: 0 5px;
   }
 }

@@ -196,7 +196,7 @@ function  Room() {
   return (
     <>
       <header>
-        <h4 id="groupName">Incoglingo</h4>
+        <h4 style={{marginTop:"10px"}} id="groupName">Incoglingo</h4>
       </header>
       <div className="tabs">
       {isMobile ? (

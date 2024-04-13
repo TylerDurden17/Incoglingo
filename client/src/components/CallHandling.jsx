@@ -15,12 +15,6 @@ function CallHandling(props) {
     const [isMuted, setIsMuted] = useState(false);
     const [isVideoClose, setIsVideoClose] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [isVisible, setIsVisible] = useState(true);
-    
-    // Toggle button handler
-    const toggleVideo = () => {
-        setIsVisible(!isVisible);
-      }
 
     useEffect(() => {
         // Set the srcObject property of each video element
@@ -135,7 +129,53 @@ function CallHandling(props) {
     const handleCloseVideo = () => {
         const newIsVideoMuted = !isVideoClose; // Update isVideoMuted first
         setIsVideoClose(newIsVideoMuted);
-        props.myStream.getVideoTracks()[0].enabled = isVideoClose;
+        if(!isVideoClose) {
+            props.myStream.getVideoTracks()[0].stop();
+        }
+        if(isVideoClose) {
+
+            // Get the new video track
+            navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                var newVideoTrack = stream.getVideoTracks()[0];
+                const oldVideoTrack = props.myStream.getVideoTracks()[0];
+                // Replace the local video track with the new one
+                props.myStream.removeTrack(oldVideoTrack);
+                props.myStream.addTrack(newVideoTrack);
+                
+        
+
+                // Get all the connected peers
+                var connections = props.newPeer.connections;
+
+                // Iterate over all connected peers
+                for (var peerId in connections) {
+                    var connectionList = connections[peerId];
+
+                    // Iterate over each connection with the peer
+                    connectionList.forEach(function(connection) {
+                    // Get the remote video stream
+                    var remoteStream = connection.remoteStream;
+
+                    // Replace the video track of the remote stream
+                    var sender = connection.peerConnection.getSenders().find(function(s) {
+                        return s.track.kind === 'video';
+                    });
+
+                    sender.replaceTrack(newVideoTrack)
+                        .then(function() {
+                        console.log('Video track replaced for peer:', peerId);
+                        })
+                        .catch(function(error) {
+                        console.error('Error replacing video track for peer:', peerId, error);
+                        });
+                    });
+                }
+            })
+            .catch(function(error) {
+            console.error('Error accessing user media:', error);
+            });
+        }
     };
       
 
@@ -144,6 +184,7 @@ function CallHandling(props) {
         props.newPeer.destroy();
         props.socket.disconnect();
         navigate(`/`);
+        
     }
 
     useEffect(() => {
@@ -291,10 +332,8 @@ function CallHandling(props) {
                 </>
             )}
             <div style={{marginTop:"20px"}} id={"yourVideo"}>
-                {isVisible && 
                     <MyStream myStream={props.myStream}/>
-                }
-                <Button variant="secondary" onClick={toggleVideo}>show/hide your video</Button>
+                
             </div>
             <div id='yourVideo'>
                 <div className='button-container'>

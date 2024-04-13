@@ -147,26 +147,26 @@ app.post('/sendSessionData', async (req, res) => {
   }
 });
 
-app.get("/getProfileData/:uid", async (req, res) => {
-  const uid = `${req.params.uid}`;
-  // try {
-  //   // Retrieve the document from Firestore based on the given uid
-  //   const profile = db.collection('users').doc(uid);
-  //   const doc = await profile.get();
-  //   if (!doc.exists) {
-  //     return res.status(404).send({ message: 'No such document!' });
-  //   }  else {
-  //     console.log('Document data:', doc.data());
-  //   }
+// app.get("/getProfileData/:uid", async (req, res) => {
+//   const uid = `${req.params.uid}`;
+//   // try {
+//   //   // Retrieve the document from Firestore based on the given uid
+//   //   const profile = db.collection('users').doc(uid);
+//   //   const doc = await profile.get();
+//   //   if (!doc.exists) {
+//   //     return res.status(404).send({ message: 'No such document!' });
+//   //   }  else {
+//   //     console.log('Document data:', doc.data());
+//   //   }
     
-  //   // Send the document data back to the client
-  //   res.send(doc.data());
+//   //   // Send the document data back to the client
+//   //   res.send(doc.data());
 
-  // } catch (err) {
-  //   console.error(err);
-  //   res.status(500).send("Internal Server Error");
-  // }
-});
+//   // } catch (err) {
+//   //   console.error(err);
+//   //   res.status(500).send("Internal Server Error");
+//   // }
+// });
 
 // Example teacher data
 const teachers = [
