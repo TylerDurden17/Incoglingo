@@ -196,18 +196,23 @@ ul{
    /* #root{
     height: 100vh;
   } */
-  #bothchats {
+  /* #bothchats {
     display: flex;
     flex-direction: column;
     height: 100vh;
     justify-content: space-between;
-   }  
+   }   */
 
-  #inner-audio-chat {
-    /* max-height: 350px; */
+  /* #inner-audio-chat {
+    max-height: 350px;
     align-self: flex-start;
     width: 100%;
     position: relative;
+  } */
+
+  #allVideos {
+    max-height: calc(100vh - 240px);
+    overflow-y: auto;
   }
   
   #message-input{
@@ -235,9 +240,10 @@ ul{
   } */
 
   .button-container { 
-    margin: 0.5rem;
-    margin-top: 10px;
+    position: fixed;
+    bottom: 10px;
     display: flex;
+    width: 100%;
     gap: 10px;
     justify-content: center;
   }
@@ -261,14 +267,14 @@ ul{
     width: 100%;
   }
   .video-list {
-    /* border: 1px solid #ccc; */
-    border-radius: 28px;
+    /* border: 1px solid #ccc;
+    border-radius: 28px; */
     display:flex;
     flex-direction: row; /* Default direction */
     flex-wrap: wrap;
     gap: 3px;
     justify-content: center;
-    overflow-y: auto;
+    /* overflow-y: auto; */
     /* max-height: 15rem; */
   }
 

@@ -130,7 +130,10 @@ function CallHandling(props) {
         const newIsVideoMuted = !isVideoClose; // Update isVideoMuted first
         setIsVideoClose(newIsVideoMuted);
         if(!isVideoClose) {
-            props.myStream.getVideoTracks()[0].stop();
+            props.myStream.getVideoTracks()[0].enabled = false;
+            setTimeout(() => {
+                props.myStream.getVideoTracks()[0].stop();
+            }, 100);
         }
         if(isVideoClose) {
 
@@ -142,8 +145,6 @@ function CallHandling(props) {
                 // Replace the local video track with the new one
                 props.myStream.removeTrack(oldVideoTrack);
                 props.myStream.addTrack(newVideoTrack);
-                
-        
 
                 // Get all the connected peers
                 var connections = props.newPeer.connections;
@@ -286,56 +287,57 @@ function CallHandling(props) {
 
     return (
         <>
+            <div id='allVideos'>
+                {Object.keys(users).length === 0 && Object.keys(streams).length === 0 ? (
+                    <p>Please wait for people to join the room or them to add you</p>
+                ) : (
+                    <>
+                        <div id={"call-handling"}>
 
-            {Object.keys(users).length === 0 && Object.keys(streams).length === 0 ? (
-                <p>Please wait for people to join the room or them to add you</p>
-            ) : (
-                <>
-                    <div id={"call-handling"}>
+                        <div className="video-list">
+                            {Object.values(streams).map((stream, index) => (
+                                <React.Fragment key={index}>
+                                    <li className="video-item" key={`li-${stream.stream.id}`}>
+                                        <video ref={el => videoRefs.current[index] = el} autoPlay key={`audio-${stream.stream.id}`}></video>
+                                        <p>{stream.name}</p>
+                                    </li>
+                                </React.Fragment>
+                            ))}
+                        </div>
+                            {loading ? 
+                                <Spinner style={{marginLeft:'30px'}} animation="border" role="status" size="sm">
+                                    <span className="visually-hidden">Loading...</span>
+                                </Spinner>
+                            :<></>}
 
-                    <div className="video-list">
-                        {Object.values(streams).map((stream, index) => (
-                            <React.Fragment key={index}>
-                                <li className="video-item" key={`li-${stream.stream.id}`}>
-                                    <video ref={el => videoRefs.current[index] = el} autoPlay key={`audio-${stream.stream.id}`}></video>
-                                    <p>{stream.name}</p>
-                                </li>
-                            </React.Fragment>
-                        ))}
-                    </div>
-                        {loading ? 
-                            <Spinner style={{marginLeft:'30px'}} animation="border" role="status" size="sm">
-                                <span className="visually-hidden">Loading...</span>
-                            </Spinner>
-                        :<></>}
-
-                        <div>
-                            
-                            <div className="button-container">
+                            <div>
+                                
+                                <div className="button-container">
 
 
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div id={"buttonsThatAddPeers"}>
-                        {Object.keys(users).map((userId) => (
-                            users[userId].status === false && (
-                                <div className={"parent-call-button"} key={userId}>
-                                    <label style={{ margin: "5px" }}> Add <b>{users[userId].name}</b> for audio chat</label>
-                                    <button style={{ margin: "5px" }} id={"child-call-button"} onClick={() => handleClick(userId)}>Add</button>
-                                </div>
-                            )
-                        ))}
-                    </div>
+                        <div id={"buttonsThatAddPeers"}>
+                            {Object.keys(users).map((userId) => (
+                                users[userId].status === false && (
+                                    <div className={"parent-call-button"} key={userId}>
+                                        <label style={{ margin: "5px" }}> Add <b>{users[userId].name}</b> for audio chat</label>
+                                        <button style={{ margin: "5px" }} id={"child-call-button"} onClick={() => handleClick(userId)}>Add</button>
+                                    </div>
+                                )
+                            ))}
+                        </div>
 
-                </>
-            )}
-            <div style={{marginTop:"20px"}} id={"yourVideo"}>
-                    <MyStream myStream={props.myStream}/>
-                
+                    </>
+                )}
+                <div style={{marginTop:"20px"}} id={"yourVideo"}>
+                        <MyStream myStream={props.myStream}/>
+                    
+                </div>
             </div>
-            <div id='yourVideo'>
+
                 <div className='button-container'>
                     <button id={"muteButton"} onClick={handleMuteClick} style={{
                         backgroundColor: isMuted ? '#ea4335' : '#6495ED'
@@ -354,7 +356,6 @@ function CallHandling(props) {
                         </>
                     )}
                 </div>
-            </div>
         </>
       );
       
