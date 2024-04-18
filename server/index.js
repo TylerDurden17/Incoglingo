@@ -8,7 +8,7 @@ const server = require('http').createServer(app);
 const admin = require('firebase-admin');
 
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
-const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
+const { getFirestore, query, limit, getDocs, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
 
 const Razorpay = require('razorpay');
 
@@ -32,6 +32,7 @@ app.use(cors());
 const port = process.env.PORT || 8080;
 
 const serviceAccount = require('./incoglingo-db15003bd346.json');
+const { log } = require('console');
 
 initializeApp({
   credential: cert(serviceAccount)
@@ -195,6 +196,7 @@ app.post('/create-subscription', async (req, res) => {
     total_count: 12, // e.g., for a yearly subscription with monthly billing
     start_at: startAtUnixTimestamp
   };
+  console.log(options);
   // try {
   //   const subscription = await razorpayInstance.subscriptions.create(options);
   //   res.json(subscription);
@@ -205,6 +207,69 @@ app.post('/create-subscription', async (req, res) => {
 
 });
 
+app.post('/book-session', async (req, res) => {
+  console.log(req.body);
+  try {
+    const { sessionId, learnerId } = req.body;
+
+    // Create a new booking document
+    const newBookingRef = db.collection('bookings').doc();
+    await newBookingRef.set({
+      bookingId: newBookingRef.id,
+      sessionId,
+      learnerId,
+      bookingDateTime: new Date(),
+      createdAt: new Date(),
+    });
+
+    // Update the corresponding session document
+    const sessionRef = db.collection('sessions').doc(sessionId);
+    await sessionRef.update({
+      bookedSeats: admin.firestore.FieldValue.increment(1),
+      attendees: admin.firestore.FieldValue.arrayUnion(learnerId),
+    });
+
+    res.status(200).json({ message: 'Session booked successfully' });
+  } catch (error) {
+    console.error('Error booking session:', error);
+    res.status(500).json({ error: 'An error occurred while booking the session' });
+  }
+})
+
+// Routes
+app.get('/sessions/latest', async (req, res) => {
+  try {
+    const sessionsRef = db.collection('sessions').orderBy('createdAt', 'desc');
+    const latestSessions = await sessionsRef.limit(10).get();
+    const sessionsList = latestSessions.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    res.json(sessionsList);
+    //console.log(sessionsList);
+  } catch (error) {
+    console.error('Error fetching sessions:', error);
+    res.status(500).json({ error: 'Failed to fetch sessions' });
+  }
+});
+
+app.get('/sessions/booked/:learnerId', async (req, res) => {
+  try {
+    const learnerId = req.params.learnerId;
+    const bookedSessionsSnapshot = await db.collection('bookings')
+      .where('learnerId', '==', learnerId)
+      .get();
+    if (bookedSessionsSnapshot.empty) {
+      res.status(404).json({ error: 'No booked sessions found for the given learner ID' });
+    } else {
+      const bookedSessionIds = bookedSessionsSnapshot.docs.map((doc) => doc.data().sessionId);
+      res.json(bookedSessionIds);
+    }
+  } catch (error) {
+    console.error('Error fetching booked sessions:', error);
+    res.status(500).json({ error: 'Failed to fetch booked sessions' });
+  }
+});
 
 server.listen(port, () => {
   console.log(`running on port ${port}`);

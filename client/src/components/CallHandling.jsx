@@ -165,7 +165,7 @@ function CallHandling(props) {
 
                     sender.replaceTrack(newVideoTrack)
                         .then(function() {
-                        console.log('Video track replaced for peer:', peerId);
+                        console.log('Video track replaced for peer:', peerId); 
                         })
                         .catch(function(error) {
                         console.error('Error replacing video track for peer:', peerId, error);

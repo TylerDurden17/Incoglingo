@@ -5,6 +5,7 @@ import {Button} from 'react-bootstrap';
 import SelectPartners from "./selectPartners";
 import { DiscussionEmbed } from 'disqus-react';
 import './dashboard.css';
+import SessionList from "./sessionList";
 
 function Dashboard() {
       
@@ -33,21 +34,27 @@ function Dashboard() {
         <div style={{position:"fixed", right:"0", paddingRight:"15px"}} className="sessionList">
             <p>Complete your profile</p>
         </div>
+
         <br></br>
         <br></br>
+
         <div className="thehome">
-                <div className="discussion-embed">
-                    {/* <DiscussionEmbed
+                {/* <div className="discussion-embed">
+                    <DiscussionEmbed
                         shortname='example'
-                    /> */}
-                </div>
+                    />
+                </div> */}
                 <div className="select-partners">
                     <SelectPartners/>
                 </div>
+                <div><SessionList/></div>
+                
         </div>
         
-        <footer><Button style={{margin: "10px", position: "absolute", bottom: "0"}} onClick={logout}>
-                    Log out</Button></footer>
+        <footer>
+            <Button style={{margin: "10px", position: "absolute", bottom: "0"}} onClick={logout}>
+                    Log out</Button>
+        </footer>
             
         </>
     )
