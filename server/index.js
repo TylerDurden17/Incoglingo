@@ -208,7 +208,6 @@ app.post('/create-subscription', async (req, res) => {
 });
 
 app.post('/book-session', async (req, res) => {
-  console.log(req.body);
   try {
     const { sessionId, learnerId } = req.body;
 
@@ -260,7 +259,8 @@ app.get('/sessions/booked/:learnerId', async (req, res) => {
       .where('learnerId', '==', learnerId)
       .get();
     if (bookedSessionsSnapshot.empty) {
-      res.status(404).json({ error: 'No booked sessions found for the given learner ID' });
+      //res.status(404).json({ error: 'No booked sessions found for the given learner ID' });
+      res.status(200).json([]); // Return an empty array instead of 404 error
     } else {
       const bookedSessionIds = bookedSessionsSnapshot.docs.map((doc) => doc.data().sessionId);
       res.json(bookedSessionIds);
