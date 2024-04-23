@@ -1,38 +1,16 @@
-const express = require('express');
-require('dotenv').config()
-const cors = require("cors");
+import express from 'express';
+import 'dotenv/config';
+import cors from 'cors';
+import { createServer } from 'http';
+import { Server as SocketIOServer } from 'socket.io';
+import admin from 'firebase-admin';
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+
 const app = express();
-//create a server to use with socket io
-const server = require('http').createServer(app);
+const server = createServer(app);
 
-const admin = require('firebase-admin');
-
-const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
-const { getFirestore, query, limit, getDocs, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
-
-const Razorpay = require('razorpay');
-
-let razorpayInstance = new Razorpay({
-  key_id: 'rzp_live_zVNgag0wyghXm0', // Replace with your actual Razorpay API key
-  key_secret: 'Mtj3FhFNu8YBxZmIVJfywyb2', // Replace with your actual Razorpay API secret
-});
-
-
-const io = require('socket.io')(server, {
-    connectionStateRecovery: {
-      // the backup duration of the sessions and the packets
-      maxDisconnectionDuration: 2 * 60 * 1000,
-      // whether to skip middlewares upon successful recovery
-      skipMiddlewares: true,
-    } 
-  }
-)
-
-app.use(cors());
-const port = process.env.PORT || 8080;
-
-const serviceAccount = require('./incoglingo-db15003bd346.json');
-const { log } = require('console');
+import serviceAccount from './incoglingo-db15003bd346.js'
 
 initializeApp({
   credential: cert(serviceAccount)
@@ -40,62 +18,79 @@ initializeApp({
 
 const db = getFirestore();
 
+const io = new SocketIOServer(server, {
+  connectionStateRecovery: {
+    maxDisconnectionDuration: 2 * 60 * 1000,
+    skipMiddlewares: true,
+  }
+});
+
+app.use(cors());
+const port = process.env.PORT || 8080;
+
 app.use(express.json());
-// Parse URL-encoded data and multipart forms
 app.use(express.urlencoded({ extended: true }));
 
+// const Razorpay = require('razorpay');
 
+// let razorpayInstance = new Razorpay({
+//   key_id: 'rzp_live_zVNgag0wyghXm0', // Replace with your actual Razorpay API key
+//   key_secret: 'Mtj3FhFNu8YBxZmIVJfywyb2', // Replace with your actual Razorpay API secret
+// });
 // ================================
 
 // Declare global variables to store the parameters so after recovery I still have
 // roomId, id since i don't want to join room again
 
-let roomId = null;
+import { nanoid } from 'nanoid'
+
+
 
 io.on('connection', (socket) => {
+  //By declaring the variables within the io.on('connection', (socket) => { ... }) block, 
+  //each client connection has its own set of variables
+  let naam;
+  let peerId;
+  var roomId;
+  socket.on('join-room', (receivedRoomId, receivedPeerId, receivedName) => {
+    console.log(receivedPeerId);
+      roomId = receivedRoomId;
+      peerId = receivedPeerId;
+      naam = receivedName;
 
-    let naam = null;
-    let peerId = null;
+      socket.join(receivedRoomId);
+      // you have to emit something to the socket first so recovery is succesfull
+      // at unexpected disconnection
+      socket.emit('joined')
+      socket.broadcast.to(receivedRoomId).emit('user-connected', receivedPeerId, receivedName);
 
-    socket.on('join-room', (receivedRoomId, receivedPeerId, receivedName) => {
-      console.log(receivedPeerId);
-        roomId = receivedRoomId;
-        peerId = receivedPeerId;
-        naam = receivedName;
+  });
 
-        socket.join(receivedRoomId);
-        // you have to emit something to the socket first so recovery is succesfull
-        // at unexpected disconnection
-        socket.emit('joined')
-        socket.broadcast.to(receivedRoomId).emit('user-connected', receivedPeerId, receivedName);
+      
+  if (socket.recovered) {
+    console.log('Recovery successful');
 
+    socket.on('name', (name, id) => {
+      naam = name;
+      peerId = id;
+      socket.broadcast.to(roomId).emit('user-recovered', naam);
     });
+  } else {
+    console.log('New or unrecoverable session');
+  }
 
-        
-    if (socket.recovered) {
-      console.log('Recovery successful');
+  socket.on('send-chat-message', message => {
+    socket.broadcast.to(roomId).emit('chat-message', {message:message, name: naam}); 
+  });
+  
+  socket.on('disconnect', () => {
+    socket.broadcast.to(roomId).emit('user-disconnected', peerId, naam);
+  });
 
-      socket.on('name', (name, id) => {
-        naam = name;
-        peerId = id;
-        socket.broadcast.to(roomId).emit('user-recovered', naam);
-      });
-    } else {
-      console.log('New or unrecoverable session');
-    }
-
-    socket.on('send-chat-message', message => {
-      socket.broadcast.to(roomId).emit('chat-message', {message:message, name: naam}); 
-    });
-    
-    socket.on('disconnect', () => {
-      socket.broadcast.to(roomId).emit('user-disconnected', peerId, naam);
-    });
-
-    //deliberate because there can be disconnections by a ghost and can't close call on those
-    socket.on('deliberate-disconnect', (id) => {
-      socket.broadcast.to(roomId).emit('deliberate', id);
-    });
+  //deliberate because there can be disconnections by a ghost and can't close call on those
+  socket.on('deliberate-disconnect', (id) => {
+    socket.broadcast.to(roomId).emit('deliberate', id);
+  });
 
 });
 
@@ -106,10 +101,10 @@ app.post('/sendProfileData', async (req, res) => {
   // Perform further processing with the extracted data
   // For example, save the user profile to a database
   try {
-    // const docRef = db.collection('users').doc(uid);
-    // // if you want to update only specific fields of an existing document
-    // // without overwriting the entire document, use merge.
-    // await docRef.set(formData, { merge: true });
+    const docRef = db.collection('users').doc(uid);
+    // if you want to update only specific fields of an existing document
+    // without overwriting the entire document, use merge.
+    await docRef.set(formData, { merge: true });
 
      res.json({ success: true});
   } catch (error) {
@@ -120,31 +115,34 @@ app.post('/sendProfileData', async (req, res) => {
 
 app.post('/sendSessionData', async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  //console.log(req.body);
-  const uid = req.body.id;
+
   try {
-    admin.auth().getUser(`${uid}`)
-    .then((userRecord) => {
+    const uid = req.body.organizer.organizerId;
+    const userRecord = await admin.auth().getUser(`${uid}`);
+    const customClaims = userRecord.customClaims;
 
-        const customClaims = userRecord.customClaims;
-
-        if (customClaims && customClaims.admin === true) {
-            console.log('User is an admin');
-            // console.log(req.body);
-            // const docRef = db.collection('sessions').doc(uid);
-            // docRef.set(req.body);
-            res.status(200).json({ message: 'Session data saved successfully.' });
-        } else {
-            console.log('User is not an admin');
-            res.status(403).json({ error: 'User is not authorized to perform this action.' });
-        }
-    })
-    .catch((error) => {
-        console.error('Error fetching user data:', error);
-    });
+    if (customClaims && customClaims.admin === true) {
+      const nid = nanoid(9);
+      const docRef = db.collection('sessions').doc();
+      const sessionData = {
+       ...req.body,
+        roomId: nid, // Add the unique room ID to the session data
+        createdAt: admin.firestore.FieldValue.serverTimestamp(), // Set the timestamp for when the session was created
+      };
+      await docRef.set(sessionData);
+      res.status(200).json({ sessionId: docRef.id, roomId: nid });
+    } else {
+      const error = new Error('User is not authorized to perform this action.');
+      error.statusCode = 403;
+      throw error;
+    }
   } catch (error) {
-    console.error("Error storing session data:", error);
-    res.status(500).json({ error: 'An error occurred while saving session data.' });
+    console.error(`Error storing session data: ${error.message}`);
+    if (error.statusCode) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'An error occurred while saving session data.' });
+    }
   }
 });
 
@@ -210,32 +208,39 @@ app.post('/create-subscription', async (req, res) => {
 app.post('/book-session', async (req, res) => {
   try {
     const { sessionId, learnerId } = req.body;
-
+    // Input validation
+    if (!sessionId || !learnerId) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
     // Create a new booking document
     const newBookingRef = db.collection('bookings').doc();
-    await newBookingRef.set({
+    const bookingData = {
       bookingId: newBookingRef.id,
       sessionId,
       learnerId,
       bookingDateTime: new Date(),
       createdAt: new Date(),
+    };
+    //The earlier code executeed two non-atomic database operations (creating a booking and updating a session document) 
+    //that won't roll back if the second operation fails, 
+    //so consider using a transaction for an all-or-nothing execution.
+    await db.runTransaction(async (transaction) => {
+      transaction.set(newBookingRef, bookingData);
+
+      const sessionRef = db.collection('sessions').doc(sessionId);
+      transaction.update(sessionRef, {
+        bookedSeats: admin.firestore.FieldValue.increment(1),
+        attendees: admin.firestore.FieldValue.arrayUnion(learnerId),
+      });
     });
 
-    // Update the corresponding session document
-    const sessionRef = db.collection('sessions').doc(sessionId);
-    await sessionRef.update({
-      bookedSeats: admin.firestore.FieldValue.increment(1),
-      attendees: admin.firestore.FieldValue.arrayUnion(learnerId),
-    });
-
-    res.status(200).json({ message: 'Session booked successfully' });
+    res.status(201).json({ message: 'Session booked successfully' });
   } catch (error) {
     console.error('Error booking session:', error);
     res.status(500).json({ error: 'An error occurred while booking the session' });
   }
-})
+});
 
-// Routes
 app.get('/sessions/latest', async (req, res) => {
   try {
     const sessionsRef = db.collection('sessions').orderBy('createdAt', 'desc');
@@ -244,8 +249,7 @@ app.get('/sessions/latest', async (req, res) => {
       id: doc.id,
       ...doc.data(),
     }));
-    res.json(sessionsList);
-    //console.log(sessionsList);
+    res.status(200).json(sessionsList);
   } catch (error) {
     console.error('Error fetching sessions:', error);
     res.status(500).json({ error: 'Failed to fetch sessions' });

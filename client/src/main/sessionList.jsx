@@ -1,8 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {ToastContainer, toast } from 'react-toastify';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
 function SessionList() {
+  const navigate = useNavigate();
   
   const user = useOutletContext();
   const [mergedSessions, setMergedSessions] = useState([]);
@@ -24,7 +25,7 @@ function SessionList() {
         const mergedSessions = sessionsList.map((session) => ({
           ...session,
           isBooked: bookedSessionIds.includes(session.id),
-        }));  
+        }));
 
         setMergedSessions(mergedSessions);
 
@@ -39,7 +40,10 @@ function SessionList() {
     fetchData();
   }, [user.uid]);
 
-  const handleJoinSession = async () => {}
+  const handleJoinSession = async (session) => {
+    const videoConferenceRoomURL = `/room/${session.roomId}`;
+    navigate(videoConferenceRoomURL, { state: { data: JSON.stringify(session) } });
+  }
 
   // Inside your React component
   const handleBookSession = async (sessionId) => {
@@ -113,13 +117,14 @@ function SessionList() {
                   <h3>{session.topic}</h3>
                   <p>{session.description}</p>
                   {session.isBooked ? (
-                    <button onClick={() => handleJoinSession(session.id)}>Join</button>
+                    <button onClick={() => handleJoinSession(session)}>Join</button>
                   ) : (
                     <button onClick={() => handleBookSession(session.id)}>Book</button>
                   )}
                 </div>
               )))}
           </div>
+          <button onClick={() => handleJoinSession('wer23')}>Join</button>
       </>
   )
 

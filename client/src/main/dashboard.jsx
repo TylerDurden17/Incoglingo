@@ -44,10 +44,10 @@ function Dashboard() {
                         shortname='example'
                     />
                 </div> */}
-                <div className="select-partners">
-                    <SelectPartners/>
-                </div>
-                <div><SessionList/></div>
+        <div className="select-partners">
+            <SelectPartners/>
+        </div>
+        <div><SessionList/></div>
                 
         </div>
         

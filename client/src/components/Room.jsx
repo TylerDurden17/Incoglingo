@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Room.css";
-//import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import MessageContainer from "./messageContainer";
 import VideoGrid from "./videoGrid";
 import Peer from "peerjs";
@@ -9,7 +9,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import Modal from "react-modal";
 
 function  Room() {
-  const roomId = 'room';
+  const {roomId} = useParams();
   const [peer, setPeer] = useState(null);
   const [socket, setSocket] = useState(null);
   const [name, setName] = useState("");
@@ -19,18 +19,27 @@ function  Room() {
   const [activeTab, setActiveTab] = useState('tabA');
   const [width, setWidth] = useState(window.innerWidth);
   const [newMessages, setNewMessages] = useState(false);
+  const [sessionData, setSessionData] = useState('')
 
   function handleWindowSizeChange() {
     setWidth(window.innerWidth);
   }
+    const location = useLocation();
     
-  useEffect(() => {
+  useEffect(() => { 
+    // const data = location.state ? location.state.data : {};
+    //session data from the sessionList
+    const data = location.state?.data ? JSON.parse(location.state.data) : {};
+    setSessionData(data);
+
+    let streams;//to store streams because useState is too slow when needed to unmount
         
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     .then((stream) => {
-        setMyStream(stream)
         localStorage.setItem('microphonePermission', true);
         setModalIsOpen(false);
+        setMyStream(stream)
+        streams = stream // Add the stream to the streams array
     })
     .catch(error => {
         console.error('Error answering call.', error);
@@ -40,6 +49,8 @@ function  Room() {
     window.addEventListener('resize', handleWindowSizeChange);
     return () => {
       window.removeEventListener('resize', handleWindowSizeChange);
+      // Stop and clean up all media streams
+      streams.getTracks().forEach((track) => track.stop());
     }
   }, []);
 
@@ -106,21 +117,18 @@ function  Room() {
 
     // Clean up on component unmount
     return () => {
-      if(myStream) {
-        myStream.getTracks().forEach(track => track.stop());
         newSocket.disconnect();
         newPeer.destroy();
         newPeer.disconnect();
-      }
     };
   }, [name, roomId]);
 
   const handleNameSubmit = (event) => {
     event.preventDefault(); 
     
-      const formData = new FormData(event.target);
-      const enteredName = formData.get("name");
-      setName(enteredName); // This will kick-off the peer and socket initialization
+    const formData = new FormData(event.target);
+    const enteredName = formData.get("name");
+    setName(enteredName); // This will kick-off the peer and socket initialization
     
   };
 
@@ -197,6 +205,7 @@ function  Room() {
     <>
       <header>
         <h4 id="groupName">Incoglingo</h4>
+        <div>{roomId}</div>
       </header>
       <div className="tabs">
       {isMobile ? (
@@ -237,7 +246,7 @@ function  Room() {
         </div>
         <div id="texting">
           <div id="texting-child">
-            {socket && <MessageContainer socket={socket} />}
+            {socket && <MessageContainer socket={socket} sessionData={sessionData} />}
           </div>
             {/* {isRoomJoined && <p style={{color: "red"}}>Welcome.</p>} */}
         </div>
