@@ -45,14 +45,14 @@ function Dashboard() {
                     />
                 </div> */}
         <div className="select-partners">
-            <SelectPartners/>
+            <SelectPartners learnerId = {user.uid}/>
         </div>
         <div><SessionList/></div>
                 
         </div>
         
         <footer>
-            <Button style={{margin: "10px", position: "absolute", bottom: "0"}} onClick={logout}>
+            <Button style={{margin: "10px", position: "fixed", bottom: "0"}} onClick={logout}>
                     Log out</Button>
         </footer>
             

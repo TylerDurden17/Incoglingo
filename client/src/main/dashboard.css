@@ -1,15 +1,12 @@
 /* Desktop styles */
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
 
-  .thehome {
-    text-align: center;
-  }
-}
+} */
 
 /* Mobile styles */
 @media (max-width: 767px) {
 
   .thehome {
-    border:1px solid red;
+    border:none;
   }
 }

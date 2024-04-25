@@ -146,55 +146,67 @@ app.post('/sendSessionData', async (req, res) => {
   }
 });
 
-// app.get("/getProfileData/:uid", async (req, res) => {
-//   const uid = `${req.params.uid}`;
-//   // try {
-//   //   // Retrieve the document from Firestore based on the given uid
-//   //   const profile = db.collection('users').doc(uid);
-//   //   const doc = await profile.get();
-//   //   if (!doc.exists) {
-//   //     return res.status(404).send({ message: 'No such document!' });
-//   //   }  else {
-//   //     console.log('Document data:', doc.data());
-//   //   }
+app.get("/getProfileData/:uid", async (req, res) => {
+  const uid = `${req.params.uid}`;
+  try {
+    // Retrieve the document from Firestore based on the given uid
+    const profile = db.collection('users').doc(uid);
+    const doc = await profile.get();
+    if (!doc.exists) {
+      return res.status(404).send({ message: 'No such document!' });
+    }  else {
+      console.log('Document data:', doc.data());
+    }
     
-//   //   // Send the document data back to the client
-//   //   res.send(doc.data());
+    // Send the document data back to the client
+    res.send(doc.data());
 
-//   // } catch (err) {
-//   //   console.error(err);
-//   //   res.status(500).send("Internal Server Error");
-//   // }
-// });
-
-// Example teacher data
-const teachers = [
-  {
-    id:  2,
-    name: 'Tyler Durden',
-    bio: 'Experienced in catology.',
-    photo: 'https://api.slingacademy.com/public/sample-users/2.png',
-  },
-];
-
-// Route to get all teachers
-app.get('/teachers', (req, res) => {
-  res.json(teachers);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
+// Route to get all teachers
+app.get('/teachers', async (req, res) => {
+  try {
+    const adminUsersQuery = db.collection('users').where('isAdmin', '==', true);
+    const querySnapshot = await adminUsersQuery.get();
+    const adminUsers = querySnapshot.docs.map(doc => doc.data());
+    // console.log(adminUsers); // Array of admin users
+    res.status(200).json(adminUsers);
+  } catch (error) {
+    console.error('Error fetching admin users:', error);
+    res.status(500).json({ error: 'Failed to fetch admin users' });
+  }
+});
 
-app.post('/create-subscription', async (req, res) => {
+app.post('/subscribeToTeacher', async (req, res) => {
 
-  const { planId } = req.body;
-  const startDate = new Date('April 1, 2024 00:00:00 GMT+0000');
-  const startAtUnixTimestamp = Math.floor(startDate.getTime() / 1000); // Convert milliseconds to seconds
+  const { learnerId, teacherId } = req.body;
+  try {
+    const userRef = db.collection('users').doc(learnerId);
+    const subscriptionRef = userRef.collection('subscriptions').doc(teacherId);
+
+    await subscriptionRef.set({
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    res.status(201).send(`Subscription created successfully`);
+    } catch (error) {
+        console.error('Error creating subscription: ', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+
+  // const { planId } = req.body;
+  // const startDate = new Date('April 1, 2024 00:00:00 GMT+0000');
+  // const startAtUnixTimestamp = Math.floor(startDate.getTime() / 1000); // Convert milliseconds to seconds
  
-  const options = {
-    plan_id: planId,
-    total_count: 12, // e.g., for a yearly subscription with monthly billing
-    start_at: startAtUnixTimestamp
-  };
-  console.log(options);
+  // const options = {
+  //   plan_id: planId,
+  //   total_count: 12, // e.g., for a yearly subscription with monthly billing
+  //   start_at: startAtUnixTimestamp
+  // };
+  // console.log(options);
   // try {
   //   const subscription = await razorpayInstance.subscriptions.create(options);
   //   res.json(subscription);
@@ -221,9 +233,9 @@ app.post('/book-session', async (req, res) => {
       bookingDateTime: new Date(),
       createdAt: new Date(),
     };
-    //The earlier code executeed two non-atomic database operations (creating a booking and updating a session document) 
-    //that won't roll back if the second operation fails, 
-    //so consider using a transaction for an all-or-nothing execution.
+    //The earlier code executeed two non-atomic database operations (creating a 
+    //booking and updating a session document) that won't roll back if the second 
+    //operation fails, so consider using a transaction for an all-or-nothing execution.
     await db.runTransaction(async (transaction) => {
       transaction.set(newBookingRef, bookingData);
 
@@ -241,39 +253,39 @@ app.post('/book-session', async (req, res) => {
   }
 });
 
-app.get('/sessions/latest', async (req, res) => {
-  try {
-    const sessionsRef = db.collection('sessions').orderBy('createdAt', 'desc');
-    const latestSessions = await sessionsRef.limit(10).get();
-    const sessionsList = latestSessions.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    res.status(200).json(sessionsList);
-  } catch (error) {
-    console.error('Error fetching sessions:', error);
-    res.status(500).json({ error: 'Failed to fetch sessions' });
-  }
-});
+// app.get('/sessions/latest', async (req, res) => {
+//   try {
+//     const sessionsRef = db.collection('sessions').orderBy('createdAt', 'desc');
+//     const latestSessions = await sessionsRef.limit(10).get();
+//     const sessionsList = latestSessions.docs.map((doc) => ({
+//       id: doc.id,
+//       ...doc.data(),
+//     }));
+//     res.status(200).json(sessionsList);
+//   } catch (error) {
+//     console.error('Error fetching sessions:', error);
+//     res.status(500).json({ error: 'Failed to fetch sessions' });
+//   }
+// });
 
-app.get('/sessions/booked/:learnerId', async (req, res) => {
-  try {
-    const learnerId = req.params.learnerId;
-    const bookedSessionsSnapshot = await db.collection('bookings')
-      .where('learnerId', '==', learnerId)
-      .get();
-    if (bookedSessionsSnapshot.empty) {
-      //res.status(404).json({ error: 'No booked sessions found for the given learner ID' });
-      res.status(200).json([]); // Return an empty array instead of 404 error
-    } else {
-      const bookedSessionIds = bookedSessionsSnapshot.docs.map((doc) => doc.data().sessionId);
-      res.json(bookedSessionIds);
-    }
-  } catch (error) {
-    console.error('Error fetching booked sessions:', error);
-    res.status(500).json({ error: 'Failed to fetch booked sessions' });
-  }
-});
+// app.get('/sessions/booked/:learnerId', async (req, res) => {
+//   try {
+//     const learnerId = req.params.learnerId;
+//     const bookedSessionsSnapshot = await db.collection('bookings')
+//       .where('learnerId', '==', learnerId)
+//       .get();
+//     if (bookedSessionsSnapshot.empty) {
+//       //res.status(404).json({ error: 'No booked sessions found for the given learner ID' });
+//       res.status(200).json([]); // Return an empty array instead of 404 error
+//     } else {
+//       const bookedSessionIds = bookedSessionsSnapshot.docs.map((doc) => doc.data().sessionId);
+//       res.json(bookedSessionIds);
+//     }
+//   } catch (error) {
+//     console.error('Error fetching booked sessions:', error);
+//     res.status(500).json({ error: 'Failed to fetch booked sessions' });
+//   }
+// });
 
 server.listen(port, () => {
   console.log(`running on port ${port}`);

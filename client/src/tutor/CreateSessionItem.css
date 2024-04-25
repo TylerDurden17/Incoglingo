@@ -23,7 +23,7 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.btn {
+.bttn {
   background-color: #4CAF50;
   color: #fff;
   padding: 10px 20px;
@@ -32,7 +32,7 @@
   cursor: pointer;
 }
 
-.btn:disabled {
+.bttn:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
@@ -41,12 +41,12 @@
   background-color: #3e8e41;
 }
 
-.btn-loading {
+.bttn-loading {
   background-color: #6666665e;
   cursor: not-allowed;
 }
 
-.btn-submit {
+.bttn-submit {
   background-color: #4CAF50;
   cursor: pointer;
 }

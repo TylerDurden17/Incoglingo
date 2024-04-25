@@ -1,0 +1,85 @@
+/* Style the outermost container */
+.sessions-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height: 500px; /* limited height */
+  overflow-y: auto; /* make it scrollable */
+}
+
+/* Style the sessions header */
+#sessions-header {
+  margin-top: 0;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Style the loading message */
+.loading-message {
+  padding: 20px;
+  font-size: 18px;
+  color: #666;
+}
+
+/* Style each session card */
+.session-card {
+  margin-bottom: 20px;
+  padding: 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+.session-card h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.session-card p {
+  margin-bottom: 20px;
+  color: #666;
+}
+
+/* Style the join and book buttons */
+.join-btn, .book-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.join-btn:hover, .book-btn:hover {
+  background-color: #3e8e41;
+}
+
+.join-btn:active, .book-btn:active {
+  background-color: #3e8e41;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile styles */
+@media only screen and (max-width: 768px) {
+  .sessions-container {
+    height: calc(100vh - 300px); /* adjust height for mobile */
+    padding: 10px;
+  }
+  .session-card {
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+  .session-card h3 {
+    font-size: 16px;
+  }
+  .session-card p {
+    font-size: 14px;
+  }
+  .join-btn, .book-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}

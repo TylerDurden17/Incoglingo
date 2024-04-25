@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@tanstack/react-query": "^5.32.0",
     "@vitejs/plugin-react": "^4.2.1",
     "bootstrap": "^5.2.3",
     "disqus-react": "^1.1.5",

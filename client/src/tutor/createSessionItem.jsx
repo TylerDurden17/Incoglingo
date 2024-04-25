@@ -162,7 +162,7 @@ function CreateSessionItem() {
       <span>Loading...</span>
     </button>
   ) : (
-    <button disabled={isButtonDisabled} type="submit" className="btn btn-submit">
+    <button disabled={isButtonDisabled} type="submit" className="bttn bttn-submit">
       Submit
     </button>
   )}
