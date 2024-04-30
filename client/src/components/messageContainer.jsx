@@ -125,23 +125,6 @@ function MessageContainer(props) {
             </div>
 
             <MessageInput onSubmit={handleSendMessage} />
-            <div id="session-details">
-  <h5>Session Details</h5>
-  <ul>
-    <li>
-      <strong>Topic:</strong> {props.sessionData.topic}
-    </li>
-    <li>
-      <strong>Timing:</strong> {props.sessionData.timing}
-    </li>
-    <li>
-      <strong>Description:</strong> {props.sessionData.description}
-    </li>
-    <li>
-      <strong>Organizer:</strong> {props.sessionData.organizer.organizerName}
-    </li>
-  </ul>
-</div>
           </div>
         </>
     );

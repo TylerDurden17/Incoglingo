@@ -32,7 +32,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // const Razorpay = require('razorpay');
-
 // let razorpayInstance = new Razorpay({
 //   key_id: 'rzp_live_zVNgag0wyghXm0', // Replace with your actual Razorpay API key
 //   key_secret: 'Mtj3FhFNu8YBxZmIVJfywyb2', // Replace with your actual Razorpay API secret
@@ -51,7 +50,7 @@ io.on('connection', (socket) => {
   //each client connection has its own set of variables
   let naam;
   let peerId;
-  var roomId;
+  let roomId;
   socket.on('join-room', (receivedRoomId, receivedPeerId, receivedName) => {
     console.log(receivedPeerId);
       roomId = receivedRoomId;
@@ -97,7 +96,6 @@ io.on('connection', (socket) => {
 app.post('/sendProfileData', async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   const { uid, formData } = req.body;
-  console.log(req.body);
   // Perform further processing with the extracted data
   // For example, save the user profile to a database
   try {
@@ -106,7 +104,7 @@ app.post('/sendProfileData', async (req, res) => {
     // without overwriting the entire document, use merge.
     await docRef.set(formData, { merge: true });
 
-     res.json({ success: true});
+    res.json({ success: true});
   } catch (error) {
     console.error('Error adding document: ', error);
     res.status(500).json({ success: false, error: 'Internal Server Error' });
@@ -147,7 +145,7 @@ app.post('/sendSessionData', async (req, res) => {
 });
 
 app.get("/getProfileData/:uid", async (req, res) => {
-  const uid = `${req.params.uid}`;
+  const uid = req.params.uid;
   try {
     // Retrieve the document from Firestore based on the given uid
     const profile = db.collection('users').doc(uid);
@@ -155,15 +153,12 @@ app.get("/getProfileData/:uid", async (req, res) => {
     if (!doc.exists) {
       return res.status(404).send({ message: 'No such document!' });
     }  else {
-      console.log('Document data:', doc.data());
+      // Send the document data back to the client
+      res.send(doc.data());
     }
-    
-    // Send the document data back to the client
-    res.send(doc.data());
-
   } catch (err) {
     console.error(err);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send({ message: 'Internal Server Error', error: err.message });
   }
 });
 
@@ -196,7 +191,6 @@ app.post('/subscribeToTeacher', async (req, res) => {
         console.error('Error creating subscription: ', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
-
   // const { planId } = req.body;
   // const startDate = new Date('April 1, 2024 00:00:00 GMT+0000');
   // const startAtUnixTimestamp = Math.floor(startDate.getTime() / 1000); // Convert milliseconds to seconds
@@ -253,39 +247,39 @@ app.post('/book-session', async (req, res) => {
   }
 });
 
-// app.get('/sessions/latest', async (req, res) => {
-//   try {
-//     const sessionsRef = db.collection('sessions').orderBy('createdAt', 'desc');
-//     const latestSessions = await sessionsRef.limit(10).get();
-//     const sessionsList = latestSessions.docs.map((doc) => ({
-//       id: doc.id,
-//       ...doc.data(),
-//     }));
-//     res.status(200).json(sessionsList);
-//   } catch (error) {
-//     console.error('Error fetching sessions:', error);
-//     res.status(500).json({ error: 'Failed to fetch sessions' });
-//   }
-// });
+app.get('/sessions/latest', async (req, res) => {
+  try {
+    const sessionsRef = db.collection('sessions').orderBy('createdAt', 'desc');
+    const latestSessions = await sessionsRef.limit(10).get();
+    const sessionsList = latestSessions.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    res.status(200).json(sessionsList);
+  } catch (error) {
+    console.error('Error fetching sessions:', error);
+    res.status(500).json({ error: 'Failed to fetch sessions' });
+  }
+});
 
-// app.get('/sessions/booked/:learnerId', async (req, res) => {
-//   try {
-//     const learnerId = req.params.learnerId;
-//     const bookedSessionsSnapshot = await db.collection('bookings')
-//       .where('learnerId', '==', learnerId)
-//       .get();
-//     if (bookedSessionsSnapshot.empty) {
-//       //res.status(404).json({ error: 'No booked sessions found for the given learner ID' });
-//       res.status(200).json([]); // Return an empty array instead of 404 error
-//     } else {
-//       const bookedSessionIds = bookedSessionsSnapshot.docs.map((doc) => doc.data().sessionId);
-//       res.json(bookedSessionIds);
-//     }
-//   } catch (error) {
-//     console.error('Error fetching booked sessions:', error);
-//     res.status(500).json({ error: 'Failed to fetch booked sessions' });
-//   }
-// });
+app.get('/sessions/booked/:learnerId', async (req, res) => {
+  try {
+    const learnerId = req.params.learnerId;
+    const bookedSessionsSnapshot = await db.collection('bookings')
+      .where('learnerId', '==', learnerId)
+      .get();
+    if (bookedSessionsSnapshot.empty) {
+      //res.status(404).json({ error: 'No booked sessions found for the given learner ID' });
+      res.status(200).json([]); // Return an empty array instead of 404 error
+    } else {
+      const bookedSessionIds = bookedSessionsSnapshot.docs.map((doc) => doc.data().sessionId);
+      res.json(bookedSessionIds);
+    }
+  } catch (error) {
+    console.error('Error fetching booked sessions:', error);
+    res.status(500).json({ error: 'Failed to fetch booked sessions' });
+  }
+});
 
 server.listen(port, () => {
   console.log(`running on port ${port}`);

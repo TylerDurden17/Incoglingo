@@ -29,8 +29,8 @@ function  Room() {
   useEffect(() => { 
     // const data = location.state ? location.state.data : {};
     //session data from the sessionList
-    const data = location.state?.data ? JSON.parse(location.state.data) : {};
-    setSessionData(data);
+    // const data = location.state?.data ? JSON.parse(location.state.data) : {};
+    // setSessionData(data);
 
     let streams;//to store streams because useState is too slow when needed to unmount
         
@@ -205,7 +205,6 @@ function  Room() {
     <>
       <header>
         <h4 id="groupName">Incoglingo</h4>
-        <div>{roomId}</div>
       </header>
       <div className="tabs">
       {isMobile ? (
@@ -246,7 +245,7 @@ function  Room() {
         </div>
         <div id="texting">
           <div id="texting-child">
-            {socket && <MessageContainer socket={socket} sessionData={sessionData} />}
+            {socket && <MessageContainer socket={socket} /*sessionData={sessionData}*/ />}
           </div>
             {/* {isRoomJoined && <p style={{color: "red"}}>Welcome.</p>} */}
         </div>

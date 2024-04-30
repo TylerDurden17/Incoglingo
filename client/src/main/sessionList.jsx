@@ -68,7 +68,7 @@ function SessionList() {
 
   const handleJoinSession = async (session) => {
     const videoConferenceRoomURL = `/room/${session.roomId}`;
-    navigate(videoConferenceRoomURL, { state: { data: JSON.stringify(session) } });
+    navigate(videoConferenceRoomURL/*, { state: { data: JSON.stringify(session) } }*/);
   }
 
   // Inside your React component
