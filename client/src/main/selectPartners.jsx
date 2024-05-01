@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import {ToastContainer, toast } from 'react-toastify';
+import { useOutletContext } from 'react-router-dom';
 // import useRazorpay from "react-razorpay";
 
 const SelectPartners = (props) => {
   const [learnerId, setLearnerId] = useState('learner-123');
   const [teacherId, setTeacherId] = useState('teacher-456');
   const [teachers, setTeachers] = useState([]);
+  const user = useOutletContext();
   // const [Razorpay, isLoaded] = useRazorpay();
 
   // const handlePayment = useCallback(() => {
@@ -27,13 +29,14 @@ const SelectPartners = (props) => {
   //   rzpay.open();
   // }, [Razorpay]);
 
-  const subscribe = async (learnerId, teacherId) => {
+  const subscribe = async (teacherId) => {
+    const learnerId = user.uid;
 
     try {
       const response = await fetch('http://localhost:8080/subscribeToTeacher', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json'},
-        body: JSON.stringify({ learnerId, teacherId }),
+        body: JSON.stringify({ learnerId, teacherId })
       });
 
       if (response.ok) {

@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {ToastContainer, toast } from 'react-toastify';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext, Link } from 'react-router-dom';
 import './sessionList.css';
 import { useQueries } from '@tanstack/react-query';
 
@@ -134,21 +134,22 @@ function SessionList() {
       <>
       <ToastContainer/>
       <div className="sessions-container">
-  <h2 id="sessions-header">Your Sessions</h2><hr />
-  {
-    mergedSessions.map((session) => (
-      <div key={session.id} className="session-card">
-        <h3>{session.topic}</h3>
-        <p>{session.description}</p>
-        <p>{session.timing}</p>
-        {session.isBooked ? (
-          <button onClick={() => handleJoinSession(session)} className="join-btn">Join</button>
-        ) : (
-          <button onClick={() => handleBookSession(session.id)} className="book-btn">Book</button>
-        )}
-      </div>
-    ))
-  }
+      <h2 id="sessions-header">Sessions</h2><hr />
+      {
+        mergedSessions.map((session) => (
+          <div key={session.id} className="session-card">
+            <h3>{session.topic}</h3>
+            <p>{session.description}</p>
+            <Link to={`/${session.organizer.organizerId}`}>{session.organizer.organizerName}</Link>
+            <p>{session.timing}</p>
+            {session.isBooked ? (
+              <button onClick={() => handleJoinSession(session)} className="join-btn">Join</button>
+            ) : (
+              <button onClick={() => handleBookSession(session.id)} className="book-btn">Book</button>
+            )}
+          </div>
+        ))
+      }
 </div>
       </>
   )

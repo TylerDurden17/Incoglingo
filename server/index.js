@@ -146,6 +146,7 @@ app.post('/sendSessionData', async (req, res) => {
 
 app.get("/getProfileData/:uid", async (req, res) => {
   const uid = req.params.uid;
+  const userRecord = await admin.auth().getUser(uid);
   try {
     // Retrieve the document from Firestore based on the given uid
     const profile = db.collection('users').doc(uid);
@@ -162,54 +163,79 @@ app.get("/getProfileData/:uid", async (req, res) => {
   }
 });
 
-// Route to get all teachers
-app.get('/teachers', async (req, res) => {
+app.get("/getOthersProfileData/:uid", async (req, res) => {
+  const uid = req.params.uid;
+  const userRecord = await admin.auth().getUser(uid);
   try {
-    const adminUsersQuery = db.collection('users').where('isAdmin', '==', true);
-    const querySnapshot = await adminUsersQuery.get();
-    const adminUsers = querySnapshot.docs.map(doc => doc.data());
-    // console.log(adminUsers); // Array of admin users
-    res.status(200).json(adminUsers);
-  } catch (error) {
-    console.error('Error fetching admin users:', error);
-    res.status(500).json({ error: 'Failed to fetch admin users' });
+    // Retrieve the document from Firestore based on the given uid
+    const profile = db.collection('users').doc(uid);
+    const doc = await profile.get();
+    if (!doc.exists) {
+      return res.status(404).send({ message: 'No such document!' });
+    }  else {
+      // Send the document data back to the client
+      const data = {
+        profile: userRecord,
+        db: doc.data()
+      }
+      res.send(data);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: 'Internal Server Error', error: err.message });
   }
 });
 
-app.post('/subscribeToTeacher', async (req, res) => {
+// Route to get all teachers
+// app.get('/teachers', async (req, res) => {
+//   try {
+//     const adminUsersQuery = db.collection('users').where('isAdmin', '==', true);
+//     const querySnapshot = await adminUsersQuery.get();
+//     const adminUsers = querySnapshot.docs.map(doc => doc.data());
+//     // console.log(adminUsers); // Array of admin users
+//     res.status(200).json(adminUsers);
+//   } catch (error) {
+//     console.error('Error fetching admin users:', error);
+//     res.status(500).json({ error: 'Failed to fetch admin users' });
+//   }
+// });
 
-  const { learnerId, teacherId } = req.body;
-  try {
-    const userRef = db.collection('users').doc(learnerId);
-    const subscriptionRef = userRef.collection('subscriptions').doc(teacherId);
+// app.post('/subscribeToTeacher', async (req, res) => {
 
-    await subscriptionRef.set({
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    res.status(201).send(`Subscription created successfully`);
-    } catch (error) {
-        console.error('Error creating subscription: ', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-  // const { planId } = req.body;
-  // const startDate = new Date('April 1, 2024 00:00:00 GMT+0000');
-  // const startAtUnixTimestamp = Math.floor(startDate.getTime() / 1000); // Convert milliseconds to seconds
+//   const { learnerId, teacherId } = req.body;
+//   console.log(learnerId);
+//   console.log(teacherId);
+//   try {
+//     const userRef = db.collection('users').doc(learnerId);
+//     const subscriptionRef = userRef.collection('subscriptions').doc(teacherId);
+
+//     await subscriptionRef.set({
+//       createdAt: admin.firestore.FieldValue.serverTimestamp()
+//     });
+//     res.status(201).send(`Subscription created successfully`);
+//   } catch (error) {
+//       console.error('Error creating subscription: ', error);
+//       res.status(500).json({ success: false, error: 'Internal Server Error' });
+//   }
+//   // const { planId } = req.body;
+//   // const startDate = new Date('April 1, 2024 00:00:00 GMT+0000');
+//   // const startAtUnixTimestamp = Math.floor(startDate.getTime() / 1000); // Convert milliseconds to seconds
  
-  // const options = {
-  //   plan_id: planId,
-  //   total_count: 12, // e.g., for a yearly subscription with monthly billing
-  //   start_at: startAtUnixTimestamp
-  // };
-  // console.log(options);
-  // try {
-  //   const subscription = await razorpayInstance.subscriptions.create(options);
-  //   res.json(subscription);
-  // } catch (error) {
-  //   res.status(500).send(error);
-  //   console.log(error);
-  // }
+//   // const options = {
+//   //   plan_id: planId,
+//   //   total_count: 12, // e.g., for a yearly subscription with monthly billing
+//   //   start_at: startAtUnixTimestamp
+//   // };
+//   // console.log(options);
+//   // try {
+//   //   const subscription = await razorpayInstance.subscriptions.create(options);
+//   //   res.json(subscription);
+//   // } catch (error) {
+//   //   res.status(500).send(error);
+//   //   console.log(error);
+//   // }
 
-});
+// });
 
 app.post('/book-session', async (req, res) => {
   try {

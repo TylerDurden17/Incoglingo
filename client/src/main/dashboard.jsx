@@ -44,9 +44,9 @@ function Dashboard() {
                         shortname='example'
                     />
                 </div> */}
-        <div className="select-partners">
+        {/* <div className="select-partners">
             <SelectPartners learnerId = {user.uid}/>
-        </div>
+        </div> */}
         <div><SessionList/></div>
                 
         </div>
