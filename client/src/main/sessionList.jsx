@@ -42,7 +42,6 @@ function SessionList() {
     const asd = async () => {
   
         // Merge sessions and booked sessions
-        console.log(sessions);
         if (sessions && bookedSessions) {
           // Merge sessions and booked sessions
           console.log(sessions);
@@ -52,11 +51,6 @@ function SessionList() {
           }));
           setMergedSessions(mergedSessions);
         }
-
-        // setMergedSessions(mergedSessions);
-
-        console.log(mergedSessions);
-
     };
   
     asd();

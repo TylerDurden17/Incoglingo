@@ -44,7 +44,6 @@ function Profile() {
                 </div>
             </div>
           </div>
-          <div>who is he subbed to?</div>
         </>
       }
     </>

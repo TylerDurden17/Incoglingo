@@ -25,31 +25,33 @@ function Home() {
   const login = (
     <>
     <div style={{marginTop:'5%'}} id="home">
-      <header style={{textAlign: "center"}}>
-        <br/>
-        <div style={{fontSize:'4em', color:'#1A237E'}}>Incoglingo</div>
-      </header>
-
-      <div style={{display:"flex", alignItems: "center", border: "1px solid #e7e7e7", 
-                    width: "fit-content", borderRadius: "20px", padding: "6px 5px", 
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)", margin: "28px auto 40px"
-                  }}>
-        <FcGoogle style={{fontSize:"x-large"}}/>
-        <GoogleSignIn/>
-      </div>
+      
 
       <main>
         <div id={"intro"}>
           <article style={{ display: "grid", gridTemplateRows: "auto auto", gridRowGap: "10px", alignItems: "center", marginBottom: "10px" }}>
-         
-          <hr/>   <section>
-              Practice speaking English in an audio chat room, with other people.
+          <header style={{textAlign: "center"}}>
+        <br/>
+        <div style={{fontSize:'4em', color:'#1A237E'}}>Incoglingo</div>
+        
+      </header>
+<section>
+              Practice English in an audio chat room, with native teachers.
             </section>
-            <div style={{ display: "grid", justifyItems: "start" }}>
+      <div style={{display:"flex", alignItems: "center", border: "1px solid #e7e7e7", 
+                    width: "fit-content", borderRadius: "20px", padding: "6px 5px", 
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)", margin: "20px auto 40px"
+                  }}>
+        <FcGoogle style={{fontSize:"x-large"}}/>
+        <GoogleSignIn/>
+      </div>
+         
+          <hr/>   
+            {/* <div style={{ display: "grid", justifyItems: "start" }}>
               <Button id="createRoomButton" onClick={createRoom}>
                 Join Room
               </Button>
-            </div>
+            </div> */}
 
           </article>
           <div>
@@ -61,14 +63,13 @@ function Home() {
             >
               Incoglingo
             </a>
-            <hr/>
           </div>
-            <div style={{padding:'10px', marginTop:'1%'}}>
+            {/* <div style={{padding:'10px', marginTop:'1%'}}>
             <h5 style={{fontWeight: '300'}} className="topic">Topic: {'What fictional character do you relate the most to? Why?'}</h5>
             <div className="topic-detail">{'5 January,'}</div>
 
       <MeetingTime/>
-            </div>
+            </div> */}
         </div>
       </main>
     </div>

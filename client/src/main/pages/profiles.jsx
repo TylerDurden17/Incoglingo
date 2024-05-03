@@ -33,7 +33,7 @@ const Profiles = () => {
   }
 
   if (profileError) {
-    return <div>Error: {error.message}</div>;
+    return <div>Error: {profileError.message}</div>;
   }
   return (
     <>

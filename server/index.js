@@ -42,6 +42,7 @@ app.use(express.urlencoded({ extended: true }));
 // roomId, id since i don't want to join room again
 
 import { nanoid } from 'nanoid'
+import { log } from 'util';
 
 
 
@@ -146,7 +147,6 @@ app.post('/sendSessionData', async (req, res) => {
 
 app.get("/getProfileData/:uid", async (req, res) => {
   const uid = req.params.uid;
-  const userRecord = await admin.auth().getUser(uid);
   try {
     // Retrieve the document from Firestore based on the given uid
     const profile = db.collection('users').doc(uid);
@@ -165,24 +165,26 @@ app.get("/getProfileData/:uid", async (req, res) => {
 
 app.get("/getOthersProfileData/:uid", async (req, res) => {
   const uid = req.params.uid;
-  const userRecord = await admin.auth().getUser(uid);
   try {
-    // Retrieve the document from Firestore based on the given uid
+    const userRecord = await admin.auth().getUser(uid);
     const profile = db.collection('users').doc(uid);
     const doc = await profile.get();
     if (!doc.exists) {
       return res.status(404).send({ message: 'No such document!' });
-    }  else {
-      // Send the document data back to the client
+    } else {
       const data = {
         profile: userRecord,
         db: doc.data()
       }
       res.send(data);
     }
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ message: 'Internal Server Error', error: err.message });
+  } catch (error) {
+    if (error.code === 'auth/user-not-found') {
+      return res.status(404).send({ message: 'User not found' });
+    } else {
+      console.error(error);
+      res.status(500).send({ message: 'Internal Server Error', error: error.message });
+    }
   }
 });
 
@@ -305,6 +307,24 @@ app.get('/sessions/booked/:learnerId', async (req, res) => {
     console.error('Error fetching booked sessions:', error);
     res.status(500).json({ error: 'Failed to fetch booked sessions' });
   }
+});
+
+app.get('/individualsessiondata/:roomId', async (req, res) => {
+    const fieldValue = req.params.roomId; // get the field value from the request query
+    try {
+      const query = db.collection('sessions').where("roomId", '==', fieldValue);
+      const document = await query.limit(1).get();
+  
+      if (document.empty) {
+        res.status(404).send(`Document not found with ${fieldName} = ${fieldValue}`);
+      } else {
+        const documentData = document.docs[0].data();
+        res.send(documentData);
+      }
+    } catch (error) {
+      console.error('Error fetching document:', error);
+      res.status(500).send('Error fetching document');
+    }
 });
 
 server.listen(port, () => {

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./Room.css";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import MessageContainer from "./messageContainer";
 import VideoGrid from "./videoGrid";
 import Peer from "peerjs";
 import io from "socket.io-client";
 import Spinner from 'react-bootstrap/Spinner';
 import Modal from "react-modal";
+import IndividualSessionData from "./individualSessionData"
 
 function  Room() {
   const {roomId} = useParams();
@@ -24,13 +25,9 @@ function  Room() {
   function handleWindowSizeChange() {
     setWidth(window.innerWidth);
   }
-    const location = useLocation();
-    
+
+
   useEffect(() => { 
-    // const data = location.state ? location.state.data : {};
-    //session data from the sessionList
-    // const data = location.state?.data ? JSON.parse(location.state.data) : {};
-    // setSessionData(data);
 
     let streams;//to store streams because useState is too slow when needed to unmount
         
@@ -233,6 +230,7 @@ function  Room() {
             </div>
             <div className={`tab-pane ${activeTab === 'tabB' ? 'active' : 'hidden'}`}>
               {socket && <MessageContainer socket={socket} />}
+          <IndividualSessionData roomId={roomId}/>
             </div>
           </div>
         </div>
@@ -247,6 +245,7 @@ function  Room() {
           <div id="texting-child">
             {socket && <MessageContainer socket={socket} /*sessionData={sessionData}*/ />}
           </div>
+          <IndividualSessionData roomId={roomId}/>
             {/* {isRoomJoined && <p style={{color: "red"}}>Welcome.</p>} */}
         </div>
       </article>
