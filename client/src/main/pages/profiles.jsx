@@ -14,10 +14,10 @@ const Profiles = () => {
     return country ? country.label : '';
   };
 
-  const { data: profileData, error: profileError, isLoading: isProfileLoading } = useQuery({
-    queryKey: ['profileData', user.uid],
+  const { data: otherProfileData, error: profileError, isLoading: isProfileLoading } = useQuery({
+    queryKey: ['otherProfileData', user.uid],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:8080/getOthersProfileData/${user.uid}`, {
+      const response = await fetch(`http://localhost:8080/getOtherProfileData/${user.uid}`, {
         method: 'GET',
       });
       if (!response.ok) {
@@ -37,25 +37,25 @@ const Profiles = () => {
   }
   return (
     <>
-          <div className="profile-container">
-      <div className="profile-card">
-        <img
-          src={profileData.profile.photoURL}
-          alt="Profile Picture"
-          className="profile-picture"
-        />
-        <h2 className="profile-name">{profileData.profile.displayName}</h2>
-        <div className="profile-info">
-          <label>Bio:</label>
-          <p className="profile-bio">{profileData.db.bio}</p>
-          <label>Country:</label>
-          <p className="profile-country">
-            {getCountryName(profileData.db.country)}
-          </p>
-          <label>Proficiency Level:</label>
-          <p className="profile-level">{profileData.db.level.toUpperCase()}</p>
+      <div className="profile-container">
+        <div className="profile-card">
+          <img
+            src={otherProfileData?.profile?.photoURL}
+            alt="Profile Picture"
+            className="profile-picture"
+          />
+          <h2 className="profile-name">{otherProfileData?.profile?.displayName}</h2>
+          <div className="profile-info">
+            <label>Bio:</label>
+            <p className="profile-bio">{otherProfileData?.db?.bio}</p>
+            <label>Country:</label>
+            <p className="profile-country">
+              {getCountryName(otherProfileData?.db?.country)}
+            </p>
+            <label>Proficiency Level:</label>
+            <p className="profile-level">{otherProfileData?.db?.level?.toUpperCase()}</p>
+          </div>
         </div>
-      </div>
     </div>
     </>
   );

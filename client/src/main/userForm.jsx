@@ -93,7 +93,9 @@ function UserForm() {
         transition: Bounce
       });
       notify();
-      queryClient.invalidateQueries(['profileData', user.uid]);
+      // queryClient.invalidateQueries(['profileData', user.uid]);
+      queryClient.invalidateQueries({ queryKey: ['profileData'] });
+      queryClient.invalidateQueries({ queryKey: ['otherProfileData'] });
       setFormData({
         level: '',
         country: '',

@@ -163,7 +163,8 @@ app.get("/getProfileData/:uid", async (req, res) => {
   }
 });
 
-app.get("/getOthersProfileData/:uid", async (req, res) => {
+app.get("/getOtherProfileData/:uid", async (req, res) => {
+  console.log('CHECK');
   const uid = req.params.uid;
   try {
     const userRecord = await admin.auth().getUser(uid);
