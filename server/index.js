@@ -42,7 +42,6 @@ app.use(express.urlencoded({ extended: true }));
 // roomId, id since i don't want to join room again
 
 import { nanoid } from 'nanoid'
-import { log } from 'util';
 
 
 
@@ -114,7 +113,6 @@ app.post('/sendProfileData', async (req, res) => {
 
 app.post('/sendSessionData', async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-
   try {
     const uid = req.body.organizer.organizerId;
     const userRecord = await admin.auth().getUser(`${uid}`);
@@ -256,7 +254,7 @@ app.post('/book-session', async (req, res) => {
       bookingDateTime: new Date(),
       createdAt: new Date(),
     };
-    //The earlier code executeed two non-atomic database operations (creating a 
+    //The earlier code executed two non-atomic database operations (creating a 
     //booking and updating a session document) that won't roll back if the second 
     //operation fails, so consider using a transaction for an all-or-nothing execution.
     await db.runTransaction(async (transaction) => {
@@ -317,7 +315,7 @@ app.get('/individualsessiondata/:roomId', async (req, res) => {
       const document = await query.limit(1).get();
   
       if (document.empty) {
-        res.status(404).send(`Document not found with ${fieldName} = ${fieldValue}`);
+        res.status(404).send(`Document not found with roomId = ${fieldValue}`);
       } else {
         const documentData = document.docs[0].data();
         res.send(documentData);

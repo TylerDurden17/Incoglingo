@@ -33,7 +33,7 @@ const SelectPartners = (props) => {
     const learnerId = user.uid;
 
     try {
-      const response = await fetch('http://localhost:8080/subscribeToTeacher', {
+      const response = await fetch('https://incoglingo.onrender.com/subscribeToTeacher', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({ learnerId, teacherId })
@@ -56,7 +56,7 @@ const SelectPartners = (props) => {
     // Replace this URL with your backend endpoint
     const fetchTeachers = async () => {
       try {
-        const response = await fetch('http://localhost:8080/teachers');
+        const response = await fetch('https://incoglingo.onrender.com/teachers');
         const data = await response.json();
         setTeachers(data);
       } catch (error) {

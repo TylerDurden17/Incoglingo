@@ -12,12 +12,12 @@ function SessionList() {
 
 
   const fetchSessions = async () => {
-    const response = await fetch('http://localhost:8080/sessions/latest');
+    const response = await fetch('https://incoglingo.onrender.com/sessions/latest');
     return response.json();
   };
   
   const fetchBookedSessions = async () => {
-    const response = await fetch(`http://localhost:8080/sessions/booked/${user.uid}`);
+    const response = await fetch(`https://incoglingo.onrender.com/sessions/booked/${user.uid}`);
     return response.json();
   };
 
@@ -68,7 +68,7 @@ function SessionList() {
   // Inside your React component
   const handleBookSession = async (sessionId) => {
     try {
-      const response = await fetch('http://localhost:8080/book-session', {
+      const response = await fetch('https://incoglingo.onrender.com/book-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

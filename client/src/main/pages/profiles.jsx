@@ -17,7 +17,7 @@ const Profiles = () => {
   const { data: otherProfileData, error: profileError, isLoading: isProfileLoading } = useQuery({
     queryKey: ['otherProfileData', user.uid],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:8080/getOtherProfileData/${user.uid}`, {
+      const response = await fetch(`https://incoglingo.onrender.com/getOtherProfileData/${user.uid}`, {
         method: 'GET',
       });
       if (!response.ok) {

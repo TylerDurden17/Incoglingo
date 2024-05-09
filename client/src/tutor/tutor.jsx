@@ -13,10 +13,10 @@ function Tutor() {
   
   return (
     <>
-    <div style={{margin:'2rem'}} id="home">
-      <Button variant="secondary" onClick={createSessionItem}>Create Session Item</Button>
+<p style={{textAlign:'center'}}>Subscriber count is coming soon!</p>
+    <div style={{margin:'1rem', textAlign:'center'}} id="home">
+      <Button variant="primary" onClick={createSessionItem}>Create Session Item</Button>
     </div>
-        
     </>
   )
 }

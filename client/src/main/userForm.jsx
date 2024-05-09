@@ -30,7 +30,7 @@ function UserForm() {
   const { data: profileData, isLoading: isProfileLoading } = useQuery({
     queryKey: ['profileData', user.uid],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:8080/getProfileData/${user.uid}`, {
+      const response = await fetch(`https://incoglingo.onrender.com/getProfileData/${user.uid}`, {
         method: 'GET',
       });
 
@@ -55,7 +55,7 @@ function UserForm() {
     
   const { mutate: sendProfileData, isLoading: isSendingProfileData } = useMutation({
     mutationFn: async (profileData) => {
-      const response = await fetch('http://localhost:8080/sendProfileData', {
+      const response = await fetch('https://incoglingo.onrender.com/sendProfileData', {
         method: 'POST',
         body: JSON.stringify(profileData),
         headers: {
@@ -80,7 +80,6 @@ function UserForm() {
       }
     },
     onSuccess: () => {
-        console.log('loolnasxccc');
       const notify = () => toast.success('Profile data added', {
         position: "bottom-center",
         autoClose: 2500,

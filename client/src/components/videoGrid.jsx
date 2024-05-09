@@ -84,7 +84,7 @@ function VideoGrid(props){
             <button style={customModalStyles.closeButton} className="modal-close" onClick={toggleModal}>
               &times;
             </button>
-            <Topic/>
+            <Topic sessionData={props.sessionData}/>
 
       </Modal>      
       <div className="ModalToDisplayTopic">

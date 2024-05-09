@@ -20,7 +20,7 @@ function  Room() {
   const [activeTab, setActiveTab] = useState('tabA');
   const [width, setWidth] = useState(window.innerWidth);
   const [newMessages, setNewMessages] = useState(false);
-  const [sessionData, setSessionData] = useState('')
+  const [sessionData, setSessionData] = useState({})
 
   function handleWindowSizeChange() {
     setWidth(window.innerWidth);
@@ -80,7 +80,7 @@ function  Room() {
       path: "/"
     });
 
-    const newSocket = io("http://localhost:8080", {
+    const newSocket = io("https://incoglingo.onrender.com/", {
       transports : ["websocket", "polling"],
        reconnectionDelay: 1000, // defaults to 1000
        reconnectionDelayMax: 5000, // defaults to 5000
@@ -198,6 +198,10 @@ function  Room() {
   //   socket.io.engine.close();
   // };
   // Render the main UI only after the room has been joined
+  const handleQuestionsfromChild = (data) => {
+    // console.log(data);
+    setSessionData(data);
+  }
   return (
     <>
       <header>
@@ -226,11 +230,11 @@ function  Room() {
           
           <div className="tab-content">
             <div className={`tab-pane ${activeTab === 'tabA' ? 'active' : 'hidden'}`}>
-              {peer && socket && (<VideoGrid updateMyStream={updateMyStream} myStream={myStream} name={name} newPeer={peer} socket={socket} />)}
+              {peer && socket && (<VideoGrid updateMyStream={updateMyStream} myStream={myStream} name={name} newPeer={peer} socket={socket} sessionData={sessionData}/>)}
             </div>
             <div className={`tab-pane ${activeTab === 'tabB' ? 'active' : 'hidden'}`}>
               {socket && <MessageContainer socket={socket} />}
-          <IndividualSessionData roomId={roomId}/>
+              <IndividualSessionData roomId={roomId} handleQuestionsfromChild={handleQuestionsfromChild}/>
             </div>
           </div>
         </div>
@@ -239,13 +243,13 @@ function  Room() {
         <div className="desktop-layout">
           <article id="bothchats">
         <div id="inner-audio-chat">
-          {peer && socket && (<VideoGrid updateMyStream={updateMyStream} myStream={myStream} name={name} newPeer={peer} socket={socket} />)}
+          {peer && socket && (<VideoGrid updateMyStream={updateMyStream} myStream={myStream} name={name} newPeer={peer} socket={socket} sessionData={sessionData}/>)}
         </div>
         <div id="texting">
           <div id="texting-child">
             {socket && <MessageContainer socket={socket} /*sessionData={sessionData}*/ />}
           </div>
-          <IndividualSessionData roomId={roomId}/>
+          <IndividualSessionData roomId={roomId} handleQuestionsfromChild={handleQuestionsfromChild}/>
             {/* {isRoomJoined && <p style={{color: "red"}}>Welcome.</p>} */}
         </div>
       </article>
