@@ -1,5 +1,6 @@
 peer/
 client/node_modules/
+client/.env/
 server/node_modules/
 client/vite-env.d.ts
 client/vite.config.ts
