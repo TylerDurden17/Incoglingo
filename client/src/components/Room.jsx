@@ -75,7 +75,7 @@ function  Room() {
     if (!name) return;
 
     const newPeer = new Peer(undefined, {
-      host: "0.peerjs.com",
+      // host: "https://0.peerjs.com/",
       port: 443,
       path: "/"
     });
