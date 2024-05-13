@@ -162,7 +162,6 @@ app.get("/getProfileData/:uid", async (req, res) => {
 });
 
 app.get("/getOtherProfileData/:uid", async (req, res) => {
-  console.log('CHECK');
   const uid = req.params.uid;
   try {
     const userRecord = await admin.auth().getUser(uid);
@@ -240,34 +239,41 @@ app.get("/getOtherProfileData/:uid", async (req, res) => {
 
 app.post('/book-session', async (req, res) => {
   try {
-    const { sessionId, learnerId } = req.body;
+    const { sessionId, learnerId, displayName, email } = req.body;
     // Input validation
     if (!sessionId || !learnerId) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-    // Create a new booking document
-    const newBookingRef = db.collection('bookings').doc();
-    const bookingData = {
-      bookingId: newBookingRef.id,
-      sessionId,
-      learnerId,
-      bookingDateTime: new Date(),
-      createdAt: new Date(),
-    };
-    //The earlier code executed two non-atomic database operations (creating a 
-    //booking and updating a session document) that won't roll back if the second 
-    //operation fails, so consider using a transaction for an all-or-nothing execution.
-    await db.runTransaction(async (transaction) => {
-      transaction.set(newBookingRef, bookingData);
 
-      const sessionRef = db.collection('sessions').doc(sessionId);
-      transaction.update(sessionRef, {
-        bookedSeats: admin.firestore.FieldValue.increment(1),
-        attendees: admin.firestore.FieldValue.arrayUnion(learnerId),
-      });
+    const sessionRef = db.collection('sessions').doc(sessionId);
+    const sessionDoc = await sessionRef.get();
+
+    if (!sessionDoc.exists) {
+      return res.status(404).json({ error: 'Session not found' });
+    }
+
+    // Check if the learner is already in the attendees array
+    const attendees = sessionDoc.data().attendees || [];
+    const learnerAttendee = attendees.find(
+      (attendee) => attendee.learnerId === learnerId
+    );
+
+    if (learnerAttendee) {
+      return res.status(400).json({ error: 'Learner already booked for this session' });
+    }
+
+    // Add the learner to the attendees array
+    const newAttendee = {
+      learnerId,
+      learnerName: displayName,
+      learnerEmail: email,
+    };
+
+    await sessionRef.update({
+      attendees: admin.firestore.FieldValue.arrayUnion(newAttendee),
     });
 
-    res.status(201).json({ message: 'Session booked successfully' });
+    res.status(200).json({ message: 'Session booked successfully' });
   } catch (error) {
     console.error('Error booking session:', error);
     res.status(500).json({ error: 'An error occurred while booking the session' });
@@ -286,25 +292,6 @@ app.get('/sessions/latest', async (req, res) => {
   } catch (error) {
     console.error('Error fetching sessions:', error);
     res.status(500).json({ error: 'Failed to fetch sessions' });
-  }
-});
-
-app.get('/sessions/booked/:learnerId', async (req, res) => {
-  try {
-    const learnerId = req.params.learnerId;
-    const bookedSessionsSnapshot = await db.collection('bookings')
-      .where('learnerId', '==', learnerId)
-      .get();
-    if (bookedSessionsSnapshot.empty) {
-      //res.status(404).json({ error: 'No booked sessions found for the given learner ID' });
-      res.status(200).json([]); // Return an empty array instead of 404 error
-    } else {
-      const bookedSessionIds = bookedSessionsSnapshot.docs.map((doc) => doc.data().sessionId);
-      res.json(bookedSessionIds);
-    }
-  } catch (error) {
-    console.error('Error fetching booked sessions:', error);
-    res.status(500).json({ error: 'Failed to fetch booked sessions' });
   }
 });
 
