@@ -1,7 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Button} from 'react-bootstrap';
-import MeetingTime from "./timeZone";
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
 import GoogleSignIn from "../auth/GoogleSignIn";
 import { FcGoogle } from "react-icons/fc";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
@@ -55,8 +53,8 @@ function Home() {
 
           </article>
           <div>
-            <label>Join the Facebook group:</label> {' '}
-            <a
+            <label>Join the Facebook group</label> {' '}
+            <a style={{ textDecoration: 'none', color: '#1A237E' }}
               href="https://www.facebook.com/groups/incoglingo/"
               target="_blank"
               rel="noopener noreferrer"
@@ -71,6 +69,38 @@ function Home() {
       <MeetingTime/>
             </div> */}
         </div>
+
+        <footer>
+        <div
+          style={{
+            alignItems: 'flex-start',
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            width: '100%',
+            position: 'fixed',
+            bottom: '10px',
+          }}
+          className="footer-content"
+        >
+          <Link style={{ textDecoration: 'none', color: '#1A237E' }} to={'/contact'}>
+            Contact Us
+          </Link>
+          <span style={{ margin: '0 10px' }}>|</span>
+          <Link style={{ textDecoration: 'none', color: '#1A237E'  }} to={'/tos'}>
+            Terms Of Service
+          </Link>
+          <span style={{ margin: '0 10px' }}>|</span>
+          <Link style={{ textDecoration: 'none', color: '#1A237E'  }} to={'/refund'}>
+            Cancellation & Refund Policy
+          </Link>
+          <span style={{ margin: '0 10px' }}>|</span>
+          <Link style={{ textDecoration: 'none', color: '#1A237E'  }} to={'/privacy'}>
+            Privacy Policy
+          </Link>
+        </div>
+      </footer>
       </main>
     </div>
 

@@ -11,6 +11,10 @@ import UserForm from "../main/userForm"
 import Navbar from '../main/Navbar';
 import Tutor from '../tutor/tutor';
 import CreateSessionItem from '../tutor/createSessionItem';
+import ContactUsPage from "./Footer/ContactUs"
+import TermsOfService from './Footer/TermsOfService';
+import Refund from './Footer/refund';
+import PrivacyPolicy from './Footer/privacy';
 
 function App() {
 return(
@@ -21,6 +25,10 @@ return(
     {/* <Route path="/room" element={<Room />} /> */}
     <Route path="/room/:roomId" element={<Room />} />
     <Route path="*" element={<ErrorPage />} />
+    <Route path='/contact' element={<ContactUsPage/>} />
+    <Route path='/tos' element={<TermsOfService/>} />
+    <Route path='/refund' element={<Refund/>} />
+    <Route path='/privacy' element={<PrivacyPolicy/>} />
 
     <Route element={<PrivateRoutes /> }>
 
