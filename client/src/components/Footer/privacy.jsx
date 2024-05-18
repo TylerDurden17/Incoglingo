@@ -73,7 +73,7 @@ const PrivacyPolicy = () => {
       <div className="contact">
         <h2>Contact Us</h2>
         <p>
-          If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us at <a href="mailto:privacy@incoglingo.com">privacy@incoglingo.com</a>.
+          If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us at <a href="mailto:kartikey.code@gmail.com">kartikey.code@gmail.com</a>.
         </p>
       </div>
     </div>
