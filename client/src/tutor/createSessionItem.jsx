@@ -21,7 +21,7 @@ function CreateSessionItem() {
 
   const { mutate: sendSessionData, isPending, isError } = useMutation({
     mutationFn: async (sessionData) => {
-      const response = await fetch('https://incoglingo.onrender.com/sendSessionData', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/sendSessionData`, {
         method: 'POST',
         body: JSON.stringify(sessionData),
         headers: {

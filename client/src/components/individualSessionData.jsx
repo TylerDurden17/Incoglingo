@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 function IndividualSessionData({roomId, handleQuestionsfromChild}) {
 
   async function fetchData() {
-    const response = await fetch(`https://incoglingo.onrender.com/individualsessiondata/${roomId}`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/individualsessiondata/${roomId}`);
     if (!response.ok) {
       const errorMessage = await response.text();
       throw new Error(errorMessage);

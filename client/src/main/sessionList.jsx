@@ -65,7 +65,7 @@ function SessionList() {
 
 
   const fetchSessions = async () => {
-    const response = await fetch('https://incoglingo.onrender.com/sessions/latest');
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/sessions/latest`);
     return response.json();
   };
 
@@ -112,7 +112,7 @@ function SessionList() {
   // Inside your React component
   const handleBookSession = async (sessionId) => {
     try {
-      const response = await fetch('https://incoglingo.onrender.com/book-session', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/book-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -80,7 +80,7 @@ function  Room() {
       path: "/"
     });
 
-    const newSocket = io("https://incoglingo.onrender.com/", {
+    const newSocket = io(`${import.meta.env.VITE_API_URL}`, {
       transports : ["websocket", "polling"],
        reconnectionDelay: 1000, // defaults to 1000
        reconnectionDelayMax: 5000, // defaults to 5000

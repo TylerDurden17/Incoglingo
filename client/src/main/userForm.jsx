@@ -30,7 +30,7 @@ function UserForm() {
   const { data: profileData, isLoading: isProfileLoading } = useQuery({
     queryKey: ['profileData', user.uid],
     queryFn: async () => {
-      const response = await fetch(`https://incoglingo.onrender.com/getProfileData/${user.uid}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/getProfileData/${user.uid}`, {
         method: 'GET',
       });
 
@@ -55,7 +55,7 @@ function UserForm() {
     
   const { mutate: sendProfileData, isLoading: isSendingProfileData } = useMutation({
     mutationFn: async (profileData) => {
-      const response = await fetch('https://incoglingo.onrender.com/sendProfileData', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/sendProfileData`, {
         method: 'POST',
         body: JSON.stringify(profileData),
         headers: {

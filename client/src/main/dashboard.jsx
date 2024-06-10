@@ -2,8 +2,8 @@ import React from "react";
 import { getAuth, signOut } from "firebase/auth";
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import {Button} from 'react-bootstrap';
-import SelectPartners from "./selectPartners";
-import { DiscussionEmbed } from 'disqus-react';
+// import SelectPartners from "./selectPartners";
+// import { DiscussionEmbed } from 'disqus-react';
 import './dashboard.css';
 import SessionList from "./sessionList";
 
