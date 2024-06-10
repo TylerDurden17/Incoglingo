@@ -55,6 +55,14 @@ function CreateSessionItem() {
           transition: Bounce,
         });
       notify();
+        // Reset the form data
+        setFormData({
+          topic: '',
+          timing: '',
+          description: '',
+          iceBreakerQuestions: [],
+          mainQuestions: [],
+        });
 
       const { sessionId, roomId } = data;
       console.log('Session created with ID:', sessionId);
