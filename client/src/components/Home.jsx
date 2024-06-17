@@ -30,7 +30,7 @@ function Home() {
           <article style={{ display: "grid", gridTemplateRows: "auto auto", gridRowGap: "10px", alignItems: "center", marginBottom: "10px" }}>
           <header style={{textAlign: "center"}}>
         <br/>
-        <div style={{fontSize:'4em', color:'#1A237E'}}>Incoglingo</div>
+        <div style={{fontFamily:'ubuntumono', fontSize:'4em', color:'#007BFF'}}>Incoglingo</div>
         
       </header>
 <section>
@@ -54,7 +54,7 @@ function Home() {
           </article>
           <div>
             <label>Join the Facebook group</label> {' '}
-            <a style={{ textDecoration: 'none', color: '#1A237E' }}
+            <a style={{ textDecoration: 'none', color: '#007BFF' }}
               href="https://www.facebook.com/groups/incoglingo/"
               target="_blank"
               rel="noopener noreferrer"
@@ -84,19 +84,19 @@ function Home() {
           }}
           className="footer-content"
         >
-          <Link style={{ textDecoration: 'none', color: '#1A237E' }} to={'/contact'}>
+          <Link style={{ textDecoration: 'none', color: '#007BFF' }} to={'/contact'}>
             Contact Us
           </Link>
           <span style={{ margin: '0 10px' }}>|</span>
-          <Link style={{ textDecoration: 'none', color: '#1A237E'  }} to={'/tos'}>
+          <Link style={{ textDecoration: 'none', color: '#007BFF'  }} to={'/tos'}>
             Terms Of Service
           </Link>
           <span style={{ margin: '0 10px' }}>|</span>
-          <Link style={{ textDecoration: 'none', color: '#1A237E'  }} to={'/refund'}>
+          <Link style={{ textDecoration: 'none', color: '#007BFF'  }} to={'/refund'}>
             Cancellation & Refund Policy
           </Link>
           <span style={{ margin: '0 10px' }}>|</span>
-          <Link style={{ textDecoration: 'none', color: '#1A237E'  }} to={'/privacy'}>
+          <Link style={{ textDecoration: 'none', color: '#007BFF'  }} to={'/privacy'}>
             Privacy Policy
           </Link>
         </div>

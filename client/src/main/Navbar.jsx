@@ -35,9 +35,10 @@ export default function Navbar() {
   return (
     <>
       <nav className="nav">
-        <Link to="/home" className="site-title">
-          Incoglingo
-        </Link>
+        <div style={{display:"flex", margin:'5px'}}>
+        <Link style={{fontFamily:'ubuntumono', fontWeight:"800", color:'#007BFF'}} to="/home" className="site-title">incoglingo
+        </Link></div>
+        
         <ul>
           {admin && (
             <CustomLink to="/partner">Partner Dashboard</CustomLink>
