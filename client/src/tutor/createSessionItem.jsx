@@ -82,6 +82,14 @@ function CreateSessionItem() {
           transition: Bounce,
         });
       notify();
+      // Disable the button
+      setIsButtonDisabled(true);
+
+      // Re-enable the button after a short delay (e.g., 3 seconds)
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+        console.log('workign?');
+      }, 3000);
     },
   });
 
@@ -182,18 +190,14 @@ Who are history's most talented people?"
           />
         </div>
         {isPending ? (
-  <button disabled type="submit" className="btn btn-loading">
-    <span>Loading...</span>
-  </button>
-) : isError ? (
-  <button disabled type="submit" className="bttn bttn-submit">
-    Submit
-  </button>
-) : (
-  <button disabled={isButtonDisabled} type="submit" className="bttn bttn-submit">
-    Submit
-  </button>
-)}
+          <button disabled type="submit" className="btn btn-loading">
+            <span>Loading...</span>
+          </button>
+        ) : (
+          <button disabled={isButtonDisabled} type="submit" className="bttn bttn-submit">
+            Submit
+          </button>
+        )}
 </form>
       {isError && (
         <div style={{ color:'red' }}>
