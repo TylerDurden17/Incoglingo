@@ -65,7 +65,7 @@ function MessageContainer(props) {
         { message:message, fromMe: true, sender: 'Me: ' },
         ]);
 
-        props.socket.emit('send-chat-message', message);
+        props.socket.emit('send-chat-message', message, props.roomId);
     };
 
     return(

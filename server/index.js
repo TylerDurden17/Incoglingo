@@ -69,16 +69,17 @@ io.on('connection', (socket) => {
   if (socket.recovered) {
     console.log('Recovery successful');
 
-    socket.on('name', (name, id) => {
+    socket.on('name', (name, id, roomId) => {
       naam = name;
       peerId = id;
+      roomId = roomId;
       socket.broadcast.to(roomId).emit('user-recovered', naam);
     });
   } else {
     console.log('New or unrecoverable session');
   }
 
-  socket.on('send-chat-message', message => {
+  socket.on('send-chat-message', (message, roomId) => {
     socket.broadcast.to(roomId).emit('chat-message', {message:message, name: naam}); 
   });
   
@@ -86,7 +87,8 @@ io.on('connection', (socket) => {
     socket.broadcast.to(roomId).emit('user-disconnected', peerId, naam);
   });
 
-  //deliberate because there can be disconnections by a ghost and can't close call on those
+  // deliberate because there can be disconnections by a ghost and can't close call on those,
+  // that is you only close the call if the user closed the connection
   socket.on('deliberate-disconnect', (id) => {
     socket.broadcast.to(roomId).emit('deliberate', id);
   });

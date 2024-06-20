@@ -160,7 +160,7 @@ function  Room() {
       if (socket.recovered) {
         // Socket was recovered 
         console.log('recovered');
-        socket.emit('name', name, peer.id );
+        socket.emit('name', name, peer.id, roomId );
         //newSocket.emit("join-room", roomId, id, name)
         // Could not recover - rejoin manually
       } else {
@@ -233,7 +233,7 @@ function  Room() {
               {peer && socket && (<VideoGrid updateMyStream={updateMyStream} myStream={myStream} name={name} newPeer={peer} socket={socket} sessionData={sessionData}/>)}
             </div>
             <div className={`tab-pane ${activeTab === 'tabB' ? 'active' : 'hidden'}`}>
-              {socket && <MessageContainer socket={socket} />}
+              {socket && <MessageContainer socket={socket} roomId={roomId}/>}
               <IndividualSessionData roomId={roomId} handleQuestionsfromChild={handleQuestionsfromChild}/>
             </div>
           </div>
@@ -247,7 +247,7 @@ function  Room() {
         </div>
         <div id="texting">
           <div id="texting-child">
-            {socket && <MessageContainer socket={socket} /*sessionData={sessionData}*/ />}
+            {socket && <MessageContainer socket={socket} roomId={roomId} /*sessionData={sessionData}*/ />}
           </div>
           <IndividualSessionData roomId={roomId} handleQuestionsfromChild={handleQuestionsfromChild}/>
             {/* {isRoomJoined && <p style={{color: "red"}}>Welcome.</p>} */}
