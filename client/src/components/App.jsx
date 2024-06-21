@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Room from "./Room"; 
 import Home from "./Home";
 import ErrorPage from './error';
-import Dashboard from "../main/dashboard";
+// import Dashboard from "../main/dashboard";
 import PrivateRoutes from './PrivateRoutes';
 import Profile from "../main/pages/Profile"
 import Profiles from "../main/pages/profiles"
@@ -15,6 +15,7 @@ import ContactUsPage from "./Footer/ContactUs"
 import TermsOfService from './Footer/TermsOfService';
 import Refund from './Footer/refund';
 import PrivacyPolicy from './Footer/privacy';
+import Matchmaker from './Matchmaker';
 
 function App() {
 return(
@@ -34,7 +35,8 @@ return(
 
       <Route element={<Navbar/>}>
 
-        <Route path='/home' element={<Dashboard />} />
+        {/* <Route path='/home' element={<Dashboard />} /> */}
+        <Route path='/home' element={<Matchmaker />} />
         
         <Route path="/:userId" element={<Profiles />} />
 

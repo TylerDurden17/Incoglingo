@@ -44,6 +44,64 @@ app.use(express.urlencoded({ extended: true }));
 import { nanoid } from 'nanoid'
 
 
+//==================================================
+//==================================================
+//==================================================
+class QueueSystem {
+  constructor() {
+    this.queue = [];
+    this.matches = new Map();
+  }
+
+  addUser(userId) {
+    this.queue.push(userId);
+    if (this.queue.length >= 2) {
+      const user1 = this.queue.shift();
+      const user2 = this.queue.shift();
+      const roomId = nanoid(9);
+      this.matches.set(user1, { partner: user2, roomId });
+      this.matches.set(user2, { partner: user1, roomId });
+      return { user1, user2, roomId };
+    }
+    return null;
+  }
+
+  removeUser(userId) {
+    this.queue = this.queue.filter(user => user !== userId);
+    this.matches.delete(userId);
+  }
+
+  getMatch(userId) {
+    return this.matches.get(userId);
+  }
+}
+
+const queueSystem = new QueueSystem();
+
+app.post('/join-queue', (req, res) => {
+  const { userId } = req.body;
+  const match = queueSystem.addUser(userId);
+
+  if (match) {
+    res.json({ 
+      matched: true, 
+      roomId: match.roomId,
+      partnerId: match.user1 === userId ? match.user2 : match.user1
+    });
+  } else {
+    res.json({ waitingInQueue: true });
+  }
+});
+
+app.post('/leave-queue', (req, res) => {
+  const { userId } = req.body;
+  queueSystem.removeUser(userId);
+  res.json({ success: true });
+});
+
+//==================================================
+//==================================================
+//==================================================
 
 io.on('connection', (socket) => {
   //By declaring the variables within the io.on('connection', (socket) => { ... }) block, 

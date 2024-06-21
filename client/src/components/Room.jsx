@@ -82,17 +82,11 @@ function  Room() {
 
     const newSocket = io(`${import.meta.env.VITE_API_URL}`, {
       transports : ["websocket", "polling"],
-       reconnectionDelay: 1000, // defaults to 1000
-       reconnectionDelayMax: 5000, // defaults to 5000
-       reconnectionAttempts: 5
+      reconnection: true, // Enable reconnection
+      reconnectionDelay: 1000, // defaults to 1000
+      reconnectionDelayMax: 5000, // defaults to 5000
+      reconnectionAttempts: 5
     });
-    // const newSocket = io('https://incoglingo.onrender.com/', {
-    //   transports : ['websocket', 'polling'],
-    //   reconnection: true, // Enable reconnection
-    //   reconnectionAttempts: 5, // Number of reconnection attempts
-    //   reconnectionDelay: 1000, // Delay between reconnection attempts in milliseconds
-    //   reconnectionDelayMax: 5000, // Maximum delay between reconnection attempts
-    // });
 
     newPeer.on("open", (id) => {
       newSocket.emit("join-room", roomId, id, name);
