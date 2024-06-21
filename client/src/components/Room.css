@@ -3,6 +3,7 @@ ul{
 }
 #groupName {
   margin: 0;
+  padding: 3px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -325,7 +326,7 @@ ul{
   border: none;
   margin-right: 0.5rem;
   border-radius: 29px;
-  background-color: #1da1f2;
+  background-color: #007BFF;
   color: #fff;
   font-size: 1.2rem;
   font-weight: bold;
@@ -385,7 +386,7 @@ ul{
 .name-prompt button {
   width: 100%;
   padding: 10px;
-  background-color: #1da1f2; /* Bootstrap 'success' green */
+  background-color: #007BFF; /* Bootstrap 'success' green */
   color: white;
   border: none;
   border-radius: 5px;
@@ -393,7 +394,7 @@ ul{
 }
 
 .name-prompt button:hover {
-  background-color: #0084ff; /* A darker shade of green for hover effect */
+  background-color: #0051ff; /* A darker shade of green for hover effect */
 }
 
 

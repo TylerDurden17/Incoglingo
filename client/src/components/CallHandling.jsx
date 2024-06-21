@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdMic, MdMicOff, MdVideocam, MdVideocamOff, MdCallEnd } from "react-icons/md";
 import Spinner from 'react-bootstrap/Spinner';
-import Button from 'react-bootstrap/Button';
+// import Button from 'react-bootstrap/Button';
 import MyStream from './myStream';
 
 function CallHandling(props) {
@@ -191,7 +191,7 @@ function CallHandling(props) {
     useEffect(() => {
         if (call) {
             //I had made a connect when remote peer disconnected by whatever and if connected
-            // means there is a call and no need to close call but if error ...\||/
+            // means there is a call and no need to close call but if error close it 
             props.newPeer.on('error', (err) => {
                 const error = err.message;
                 if (error.includes('Could not connect to peer')) {
