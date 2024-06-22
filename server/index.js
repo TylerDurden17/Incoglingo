@@ -78,27 +78,22 @@ class QueueSystem {
 
 const queueSystem = new QueueSystem();
 
-app.post('/join-queue', (req, res) => {
+app.post('/matchmaking', (req, res) => {
   const { userId } = req.body;
-  const match = queueSystem.addUser(userId);
+  const existingMatch = queueSystem.getMatch(userId);
 
-  if (match) {
-    res.json({ 
-      matched: true, 
-      roomId: match.roomId,
-      partnerId: match.user1 === userId ? match.user2 : match.user1
-    });
+  if (existingMatch) {
+    res.json({ matched: true, roomId: existingMatch.roomId, partnerId: existingMatch.partner });
+    return;
+  }
+  //If the user does not have a match, add the user to the queue
+  const newMatch = queueSystem.addUser(userId);
+  if (newMatch) {
+    res.json({ matched: true, roomId: newMatch.roomId, partnerId: newMatch.user1 === userId ? newMatch.user2 : newMatch.user1 });
   } else {
-    res.json({ waitingInQueue: true });
+    res.json({ matched: false });
   }
 });
-
-app.post('/leave-queue', (req, res) => {
-  const { userId } = req.body;
-  queueSystem.removeUser(userId);
-  res.json({ success: true });
-});
-
 //==================================================
 //==================================================
 //==================================================
