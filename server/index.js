@@ -53,46 +53,55 @@ class QueueSystem {
     this.matches = new Map();
   }
 
-  addUser(userId) {
-    this.queue.push(userId);
-    if (this.queue.length >= 2) {
-      const user1 = this.queue.shift();
-      const user2 = this.queue.shift();
-      const roomId = nanoid(9);
-      this.matches.set(user1, { partner: user2, roomId });
-      this.matches.set(user2, { partner: user1, roomId });
-      return { user1, user2, roomId };
+  joinQueue(userId) {
+    if (this.queue.includes(userId) || this.matches.has(userId)) {
+      return null; // User is already in queue or matched
     }
-    return null;
+
+    if (this.queue.length > 0) {
+      const partnerId = this.queue.shift();
+      const roomId = nanoid(9);
+      this.matches.set(userId, { partner: partnerId, roomId });
+      this.matches.set(partnerId, { partner: userId, roomId });
+      return { matched: true, roomId, partnerId };
+    } else {
+      this.queue.push(userId);
+      return { matched: false };
+    }
   }
 
-  removeUser(userId) {
-    this.queue = this.queue.filter(user => user !== userId);
+  leaveQueue(userId) {
+    this.queue = this.queue.filter(id => id !== userId);
     this.matches.delete(userId);
   }
 
-  getMatch(userId) {
-    return this.matches.get(userId);
+  checkStatus(userId) {
+    if (this.matches.has(userId)) {
+      const { partner, roomId } = this.matches.get(userId);
+      return { matched: true, roomId, partnerId: partner };
+    }
+    return { matched: false };
   }
 }
 
 const queueSystem = new QueueSystem();
 
-app.post('/matchmaking', (req, res) => {
+app.post('/matchmaking/join', (req, res) => {
   const { userId } = req.body;
-  const existingMatch = queueSystem.getMatch(userId);
+  const result = queueSystem.joinQueue(userId);
+  res.json(result);
+});
 
-  if (existingMatch) {
-    res.json({ matched: true, roomId: existingMatch.roomId, partnerId: existingMatch.partner });
-    return;
-  }
-  //If the user does not have a match, add the user to the queue
-  const newMatch = queueSystem.addUser(userId);
-  if (newMatch) {
-    res.json({ matched: true, roomId: newMatch.roomId, partnerId: newMatch.user1 === userId ? newMatch.user2 : newMatch.user1 });
-  } else {
-    res.json({ matched: false });
-  }
+app.post('/matchmaking/leave', (req, res) => {
+  const { userId } = req.body;
+  queueSystem.leaveQueue(userId);
+  res.sendStatus(200);
+});
+
+app.post('/matchmaking/status', (req, res) => {
+  const { userId } = req.body;
+  const result = queueSystem.checkStatus(userId);
+  res.json(result);
 });
 //==================================================
 //==================================================

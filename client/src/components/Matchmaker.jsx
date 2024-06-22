@@ -10,7 +10,6 @@ const STATUS = {
 function Matchmaker() {
   const user = useOutletContext();
   const navigate = useNavigate();
-  const [roomId, setRoomId] = useState(null);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -18,7 +17,7 @@ function Matchmaker() {
     let pollingInterval;
 
     if (status === STATUS.WAITING) {
-      pollingInterval = setInterval(checkForMatch, 5000); // Poll every 5 seconds
+      pollingInterval = setInterval(checkMatchStatus, 5000); // Poll every 5 seconds
     }
 
     return () => {
@@ -33,42 +32,69 @@ function Matchmaker() {
     setErrorMessage(message);
   };
 
-  const checkForMatch = async () => {
+  const checkMatchStatus = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/matchmaking`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/matchmaking/status`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.uid })
       });
       const data = await response.json();
       if (data.matched) {
-        setRoomId(data.roomId);
         setStatus(STATUS.IDLE);
         navigate(`/room/${data.roomId}`);
       }
     } catch (err) {
-      handleError('Error checking for match. Please try again.');
+      handleError('Error checking match status. Please try again.');
     }
   };
 
   const startMatchmaking = async () => {
-    setStatus(STATUS.WAITING);
-    checkForMatch();
+    try {
+      setStatus(STATUS.WAITING);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/matchmaking/join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.uid })
+      });
+      const data = await response.json();
+      if (data.matched) {
+        navigate(`/room/${data.roomId}`);
+      } else {
+        setStatus(STATUS.WAITING);
+      }
+    } catch (err) {
+      handleError('Error joining queue. Please try again.');
+    }
+  };
+
+  const leaveQueue = async () => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/matchmaking/leave`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.uid })
+      });
+      setStatus(STATUS.IDLE);
+    } catch (err) {
+      handleError('Error leaving queue. Please try again.');
+    }
   };
 
   return (
-    <>
-      <div>
-        <h1>Matchmaking System</h1>
-        {status === STATUS.IDLE ? (
-          <button onClick={startMatchmaking}>Find Partner</button>
-        ) : status === STATUS.WAITING ? (
+    <div>
+      <h1>Matchmaking System</h1>
+      {status === STATUS.IDLE ? (
+        <button onClick={startMatchmaking}>Find Partner</button>
+      ) : status === STATUS.WAITING ? (
+        <>
           <p>Waiting for a partner...You're in the queue!</p>
-        ) : (
-          <p style={{ color: 'red' }}>{errorMessage}</p>
-        )}
-        {roomId && <p>Match found Redirecting to chat room {roomId}</p>}
-      </div>
-    </>
+          <button onClick={leaveQueue}>Leave Queue</button>
+        </>
+      ) : (
+        <p style={{ color: 'red' }}>{errorMessage}</p>
+      )}
+    </div>
   );
 }
 
