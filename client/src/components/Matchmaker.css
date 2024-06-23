@@ -1,0 +1,92 @@
+
+.matchmaker-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  background-color: #FFFFFF;
+}
+
+.matchmaker-title {
+  color: #007BFF;
+  margin-bottom: 20px;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.matchmaker-button {
+  background-color: #007BFF;
+  border: none;
+  color: #FFFFFF;
+  padding: 12px 24px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 4px 2px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-radius: 4px;
+}
+
+.matchmaker-button:hover {
+  background-color: #0056b3;
+}
+
+.matchmaker-button:active {
+  background-color: #004085;
+}
+
+.matchmaker-button:disabled {
+  background-color: #D6D8DB;
+  cursor: not-allowed;
+}
+
+.message {
+  color: #6C757D;
+  margin: 10px 0;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.message.error {
+  color: #DC3545;
+  font-family: 'Open Sans', sans-serif;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* Secondary button style */
+.secondary-button {
+  background-color: #6EC1E4;
+  color: #FFFFFF;
+}
+
+.secondary-button:hover {
+  background-color: #3EA0CF;
+}
+
+.secondary-button:active {
+  background-color: #2A7DA1;
+}
+
+/* Input field style (if needed) */
+.input-field {
+  border: 1px solid #D6D8DB;
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 4px;
+}
+
+.input-field:focus {
+  border-color: #007BFF;
+  outline: none;
+}
+
+.input-label {
+  font-size: 14px;
+  color: #6C757D;
+  margin-bottom: 4px;
+}

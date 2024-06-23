@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useOutletContext, useNavigate } from 'react-router-dom';
+import "./Matchmaker.css"
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const STATUS = {
   IDLE: 'idle',
@@ -12,29 +15,22 @@ function Matchmaker() {
   const navigate = useNavigate();
   const [status, setStatus] = useState(STATUS.IDLE);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    let pollingInterval;
-
-    if (status === STATUS.WAITING) {
-      pollingInterval = setInterval(checkMatchStatus, 5000); // Poll every 5 seconds
-    }
-
-    return () => {
-      if (pollingInterval) {
-        clearInterval(pollingInterval);
-      }
-    };
-  }, [status]);
-
-  const handleError = (message) => {
+  const handleError = useCallback((message) => {
     setStatus(STATUS.ERROR);
     setErrorMessage(message);
-  };
+  }, []);
 
-  const checkMatchStatus = async () => {
+  const navigateToRoom = useCallback((roomId) => {
+    navigate(`/room/${roomId}`);
+  }, [navigate]);
+
+  const checkMatchStatus = useCallback(async () => {
+    if (status !== STATUS.WAITING || !user?.uid) return;
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/matchmaking/status`, {
+      const response = await fetch(`${API_URL}/matchmaking/status`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.uid })
@@ -42,57 +38,87 @@ function Matchmaker() {
       const data = await response.json();
       if (data.matched) {
         setStatus(STATUS.IDLE);
-        navigate(`/room/${data.roomId}`);
+        navigateToRoom(data.roomId);
       }
     } catch (err) {
-      handleError('Error checking match status. Please try again.');
+      handleError(`Error checking match status: ${err.message}`);
     }
-  };
+  }, [status, user?.uid, navigateToRoom, handleError]);
+
+  useEffect(() => {
+    let intervalId;
+    if (status === STATUS.WAITING) {
+      intervalId = setInterval(checkMatchStatus, 5000);
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [status, checkMatchStatus]);
 
   const startMatchmaking = async () => {
+    if (!user?.uid) {
+      handleError('User not authenticated');
+      return;
+    }
+    setIsLoading(true);
+    setStatus(STATUS.WAITING);
     try {
-      setStatus(STATUS.WAITING);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/matchmaking/join`, {
+      const response = await fetch(`${API_URL}/matchmaking/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.uid })
       });
       const data = await response.json();
       if (data.matched) {
-        navigate(`/room/${data.roomId}`);
-      } else {
-        setStatus(STATUS.WAITING);
+        setStatus(STATUS.IDLE);
+        navigateToRoom(data.roomId);
       }
     } catch (err) {
-      handleError('Error joining queue. Please try again.');
+      handleError(`Error joining queue: ${err.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const leaveQueue = async () => {
+    if (!user?.uid) {
+      handleError('User not authenticated');
+      return;
+    }
+    setIsLoading(true);
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/matchmaking/leave`, {
+      await fetch(`${API_URL}/matchmaking/leave`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.uid })
       });
       setStatus(STATUS.IDLE);
     } catch (err) {
-      handleError('Error leaving queue. Please try again.');
+      handleError(`Error leaving queue: ${err.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  if (!user) {
+    return <p>Please log in to use the matchmaking system.</p>;
+  }
+
   return (
-    <div>
-      <h1>Matchmaking System</h1>
+    <div className="matchmaker-container">
       {status === STATUS.IDLE ? (
-        <button onClick={startMatchmaking}>Find Partner</button>
+        <button className="matchmaker-button" onClick={startMatchmaking} disabled={isLoading}>
+          {isLoading ? 'Finding Partner...' : 'Find Partner'}
+        </button>
       ) : status === STATUS.WAITING ? (
         <>
           <p>Waiting for a partner...You're in the queue!</p>
-          <button onClick={leaveQueue}>Leave Queue</button>
+          <button className="matchmaker-button secondary-button" onClick={leaveQueue} disabled={isLoading}>
+            {isLoading ? 'Leaving Queue...' : 'Leave Queue'}
+          </button>
         </>
       ) : (
-        <p style={{ color: 'red' }}>{errorMessage}</p>
+        <p className="message error" style={{ color: 'red' }}>{errorMessage}</p>
       )}
     </div>
   );
