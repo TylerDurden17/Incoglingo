@@ -48,7 +48,6 @@ import { nanoid } from 'nanoid'
 //==================================================
 //==================================================
 import AsyncLock from 'async-lock';
-
 class QueueSystem {
   constructor() {
     this.queue = [];
@@ -60,15 +59,19 @@ class QueueSystem {
 
   async joinQueue(userId) {
     return this.lock.acquire('matchmaking', async () => {
-      if (this.queue.includes(userId) || this.matches.has(userId)) {
-        return null; // User is already in queue or matched
+      // Automatically reset user's status if they're already matched
+      if (this.matches.has(userId)) {
+        await this.resetUserStatus(userId);
       }
+
+      // Remove user from queue if they're already in it
+      this.queue = this.queue.filter(id => id !== userId);
 
       if (this.queue.length > 0) {
         const partnerId = this.queue.shift();
         const roomId = nanoid(9);
-        this.matches.set(userId, { partner: partnerId, roomId });
-        this.matches.set(partnerId, { partner: userId, roomId });
+        this.matches.set(userId, { partner: partnerId, roomId, timestamp: Date.now() });
+        this.matches.set(partnerId, { partner: userId, roomId, timestamp: Date.now() });
         return { matched: true, roomId, partnerId };
       } else {
         this.queue.push(userId);
@@ -90,18 +93,22 @@ class QueueSystem {
         const { partner, roomId } = this.matches.get(userId);
         return { matched: true, roomId, partnerId: partner };
       }
-      return { matched: false };
+      if (this.queue.includes(userId)) {
+        return { matched: false, inQueue: true };
+      }
+      return { matched: false, inQueue: false };
     });
   }
 
-  async endMatch(userId) {
-    return this.lock.acquire('matchmaking', () => {
-      if (this.matches.has(userId)) {
-        const { partner } = this.matches.get(userId);
-        this.matches.delete(userId);
-        this.matches.delete(partner);
-      }
-    });
+  async resetUserStatus(userId) {
+    if (this.matches.has(userId)) {
+      const { partner } = this.matches.get(userId);
+      this.matches.delete(userId);
+      this.matches.delete(partner);
+      // Optionally, add the partner back to the queue
+      // this.queue.push(partner);
+    }
+    this.queue = this.queue.filter(id => id !== userId);
   }
 
   async cleanupMatches() {
@@ -113,6 +120,8 @@ class QueueSystem {
           this.matches.delete(userId);
         }
       }
+      // Clean up queue entries older than 1 hour
+      this.queue = this.queue.filter(entry => now - entry.timestamp <= 60 * 60 * 1000);
     });
   }
 }
