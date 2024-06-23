@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useOutletContext, useNavigate } from 'react-router-dom';
+import { getAuth, signOut } from "firebase/auth";
 import "./Matchmaker.css"
+import {Button} from 'react-bootstrap';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -11,11 +13,22 @@ const STATUS = {
 };
 
 function Matchmaker() {
+  const auth = getAuth();
   const user = useOutletContext();
   const navigate = useNavigate();
   const [status, setStatus] = useState(STATUS.IDLE);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  const logout = () => {
+    signOut(auth).then(() => {
+        // Sign-out successful.
+        navigate('/'); 
+    }).catch((error) => {
+        // An error happened.
+        console.log(error);
+    });
+  }
 
   const handleError = useCallback((message) => {
     setStatus(STATUS.ERROR);
@@ -120,6 +133,10 @@ function Matchmaker() {
       ) : (
         <p className="message error" style={{ color: 'red' }}>{errorMessage}</p>
       )}
+      <footer>
+            <Button style={{margin: "10px", position: "fixed", bottom: "0", left:"0"}} onClick={logout}>
+                    Log out</Button>
+        </footer>
     </div>
   );
 }

@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 const GoogleSignIn = () => {
+
+  const [isLoading, setIsLoading] = useState(false);
   const auth = getAuth();
   const provider = new GoogleAuthProvider();
 
   const handleGoogleSignIn = async () => {
+    setIsLoading(true);
     try {
       // Sign in with Google
       const result = await signInWithPopup(auth, provider);
@@ -37,12 +40,20 @@ const GoogleSignIn = () => {
 
       // Log the error details
       console.error('Error signing in with Google:', errorCode, errorMessage, email, credential);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div>
-      <button style={{border:"none", background:"none"}} onClick={handleGoogleSignIn}>Sign in with Google</button>
+      <button 
+        style={{border:"none", background:"none"}} 
+        onClick={handleGoogleSignIn}
+        disabled={isLoading}
+      >
+        {isLoading ? 'Signing in...' : 'Sign in with Google'}
+      </button>
     </div>
   );
 };
