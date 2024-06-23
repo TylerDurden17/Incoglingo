@@ -54,6 +54,8 @@ class QueueSystem {
     this.queue = [];
     this.matches = new Map();
     this.lock = new AsyncLock();
+    // Cleanup matches every hour
+    setInterval(() => this.cleanupMatches(), 60 * 60 * 1000);
   }
 
   async joinQueue(userId) {
@@ -89,6 +91,28 @@ class QueueSystem {
         return { matched: true, roomId, partnerId: partner };
       }
       return { matched: false };
+    });
+  }
+
+  async endMatch(userId) {
+    return this.lock.acquire('matchmaking', () => {
+      if (this.matches.has(userId)) {
+        const { partner } = this.matches.get(userId);
+        this.matches.delete(userId);
+        this.matches.delete(partner);
+      }
+    });
+  }
+
+  async cleanupMatches() {
+    return this.lock.acquire('matchmaking', () => {
+      const now = Date.now();
+      for (const [userId, match] of this.matches.entries()) {
+        // Remove matches older than 2 hours
+        if (now - match.timestamp > 2 * 60 * 60 * 1000) {
+          this.matches.delete(userId);
+        }
+      }
     });
   }
 }
