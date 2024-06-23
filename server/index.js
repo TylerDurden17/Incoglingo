@@ -47,61 +47,85 @@ import { nanoid } from 'nanoid'
 //==================================================
 //==================================================
 //==================================================
+import AsyncLock from 'async-lock';
+
 class QueueSystem {
   constructor() {
     this.queue = [];
     this.matches = new Map();
+    this.lock = new AsyncLock();
   }
 
-  joinQueue(userId) {
-    if (this.queue.includes(userId) || this.matches.has(userId)) {
-      return null; // User is already in queue or matched
-    }
+  async joinQueue(userId) {
+    return this.lock.acquire('matchmaking', async () => {
+      if (this.queue.includes(userId) || this.matches.has(userId)) {
+        return null; // User is already in queue or matched
+      }
 
-    if (this.queue.length > 0) {
-      const partnerId = this.queue.shift();
-      const roomId = nanoid(9);
-      this.matches.set(userId, { partner: partnerId, roomId });
-      this.matches.set(partnerId, { partner: userId, roomId });
-      return { matched: true, roomId, partnerId };
-    } else {
-      this.queue.push(userId);
+      if (this.queue.length > 0) {
+        const partnerId = this.queue.shift();
+        const roomId = nanoid(9);
+        this.matches.set(userId, { partner: partnerId, roomId });
+        this.matches.set(partnerId, { partner: userId, roomId });
+        return { matched: true, roomId, partnerId };
+      } else {
+        this.queue.push(userId);
+        return { matched: false };
+      }
+    });
+  }
+
+  async leaveQueue(userId) {
+    return this.lock.acquire('matchmaking', () => {
+      this.queue = this.queue.filter(id => id !== userId);
+      this.matches.delete(userId);
+    });
+  }
+
+  async checkStatus(userId) {
+    return this.lock.acquire('matchmaking', () => {
+      if (this.matches.has(userId)) {
+        const { partner, roomId } = this.matches.get(userId);
+        return { matched: true, roomId, partnerId: partner };
+      }
       return { matched: false };
-    }
-  }
-
-  leaveQueue(userId) {
-    this.queue = this.queue.filter(id => id !== userId);
-    this.matches.delete(userId);
-  }
-
-  checkStatus(userId) {
-    if (this.matches.has(userId)) {
-      const { partner, roomId } = this.matches.get(userId);
-      return { matched: true, roomId, partnerId: partner };
-    }
-    return { matched: false };
+    });
   }
 }
 
 const queueSystem = new QueueSystem();
 
-app.post('/matchmaking/join', (req, res) => {
+app.post('/matchmaking/join', async (req, res) => {
   const { userId } = req.body;
-  const result = queueSystem.joinQueue(userId);
-  res.json(result);
+  try {
+    const result = await queueSystem.joinQueue(userId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error in join queue:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
-app.post('/matchmaking/leave', (req, res) => {
+app.post('/matchmaking/leave', async (req, res) => {
   const { userId } = req.body;
-  queueSystem.leaveQueue(userId);
-  res.sendStatus(200);
+  try {
+    await queueSystem.leaveQueue(userId);
+    res.sendStatus(200);
+  } catch (error) {
+    console.error('Error in leave queue:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
-app.post('/matchmaking/status', (req, res) => {
+app.post('/matchmaking/status', async (req, res) => {
   const { userId } = req.body;
-  const result = queueSystem.checkStatus(userId);
-  res.json(result);
+  try {
+    const result = await queueSystem.checkStatus(userId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error in check status:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 //==================================================
 //==================================================
@@ -389,4 +413,3 @@ server.listen(port, () => {
       
     }
 });
-
