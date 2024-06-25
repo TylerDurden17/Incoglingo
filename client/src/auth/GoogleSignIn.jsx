@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
 
 const GoogleSignIn = () => {
 
@@ -11,7 +11,8 @@ const GoogleSignIn = () => {
     setIsLoading(true);
     try {
       // Sign in with Google
-      const result = await signInWithPopup(auth, provider);
+      // const result = await signInWithPopup(auth, provider);
+      const result = await signInWithRedirect(auth, provider);
 
       // This gives you a Google Access Token. You can use it to access the Google API.
       const credential = GoogleAuthProvider.credentialFromResult(result);
