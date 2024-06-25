@@ -1,5 +1,5 @@
-import { Outlet, Navigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import { Outlet, Navigate } from 'react-router-dom';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const PrivateRoutes = () => {
