@@ -4,4 +4,7 @@ client/.env/
 server/node_modules/
 client/vite-env.d.ts
 client/vite.config.ts
+client/deno.lock
 server/incoglingo-db15003bd346.js
+# Local Netlify folder
+.netlify

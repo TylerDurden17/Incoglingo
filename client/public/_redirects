@@ -1,2 +1,5 @@
-/*    /index.html   200
-/__/auth/* https://incoglingo.firebaseapp.com/__/auth/:splat 200
+# Proxy Firebase auth requests
+/__/auth/*  https://incoglingo.firebaseapp.com/__/auth/:splat  200!
+
+# Fallback for SPA: serve index.html for all other routes
+/*  /index.html  200
