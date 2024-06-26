@@ -30,7 +30,7 @@ function Home() {
           <article style={{ display: "grid", gridTemplateRows: "auto auto", gridRowGap: "10px", alignItems: "center", marginBottom: "10px" }}>
           <header style={{textAlign: "center"}}>
         <br/>
-        <div style={{fontFamily:'ubuntumono', fontSize:'4em', color:'#007BFF'}}>Incoglingo</div>
+        <div style={{fontFamily:'ubuntumono', fontSize:'3em', color:'#007BFF'}}>Incoglingo</div>
         
       </header>
 <section>
@@ -80,6 +80,7 @@ function Home() {
             justifyContent: 'center',
             width: '100%',
             position: 'fixed',
+            left: '0',
             bottom: '10px',
           }}
           className="footer-content"
