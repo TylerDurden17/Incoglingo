@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { getAuth, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
+import {Button} from 'react-bootstrap';
 
 const GoogleSignIn = () => {
 
@@ -102,18 +103,16 @@ const GoogleSignIn = () => {
           For the best experience and to ensure successful sign-in, please open this page in your default mobile browser.
         </p>
         <div className="flex flex-col space-y-2">
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          <Button
             onClick={copyToClipboard}
           >
             {copied ? 'Copied!' : 'Copy Link'}
-          </button>
-          <button
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          </Button>
+          <Button
             onClick={openInBrowser}
           >
             Open in Browser
-          </button>
+          </Button>
         </div>
       </div>
     );
