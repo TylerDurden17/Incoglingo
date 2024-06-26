@@ -6,6 +6,7 @@ const GoogleSignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isInAppBrowser, setIsInAppBrowser] = useState(false);
   const [error, setError] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const ua = navigator.userAgent || navigator.vendor || window.opera;
@@ -70,6 +71,29 @@ const GoogleSignIn = () => {
     }
   };
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
+  };
+
+  const openInBrowser = () => {
+    const currentURL = window.location.href;
+    if (/android/i.test(navigator.userAgent)) {
+      // Android intent for opening in Chrome
+      window.location.href = `intent://${currentURL.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`;
+    } else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+      // iOS - try opening in Safari
+      window.location.href = currentURL;
+    } else {
+      // Fallback - open in a new tab
+      window.open(currentURL, '_blank');
+    }
+  };
+
   if (isInAppBrowser) {
     return (
       <div className="p-4 max-w-md mx-auto bg-yellow-100 rounded-lg shadow-md">
@@ -77,19 +101,20 @@ const GoogleSignIn = () => {
         <p className="mb-4">
           For the best experience and to ensure successful sign-in, please open this page in your default mobile browser.
         </p>
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={() => {
-            const currentURL = window.location.href;
-            if (navigator.share) {
-              navigator.share({ url: currentURL });
-            } else {
-              window.location.href = `sms:&body=Check out this link: ${currentURL}`;
-            }
-          }}
-        >
-          Share Link
-        </button>
+        <div className="flex flex-col space-y-2">
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={copyToClipboard}
+          >
+            {copied ? 'Copied!' : 'Copy Link'}
+          </button>
+          <button
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            onClick={openInBrowser}
+          >
+            Open in Browser
+          </button>
+        </div>
       </div>
     );
   }
