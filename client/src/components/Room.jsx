@@ -228,7 +228,7 @@ function  Room() {
             </div>
             <div className={`tab-pane ${activeTab === 'tabB' ? 'active' : 'hidden'}`}>
               {socket && <MessageContainer socket={socket} roomId={roomId}/>}
-              <IndividualSessionData roomId={roomId} handleQuestionsfromChild={handleQuestionsfromChild}/>
+              {/* <IndividualSessionData roomId={roomId} handleQuestionsfromChild={handleQuestionsfromChild}/> */}
             </div>
           </div>
         </div>
@@ -243,7 +243,7 @@ function  Room() {
           <div id="texting-child">
             {socket && <MessageContainer socket={socket} roomId={roomId} /*sessionData={sessionData}*/ />}
           </div>
-          <IndividualSessionData roomId={roomId} handleQuestionsfromChild={handleQuestionsfromChild}/>
+          {/* <IndividualSessionData roomId={roomId} handleQuestionsfromChild={handleQuestionsfromChild}/> */}
             {/* {isRoomJoined && <p style={{color: "red"}}>Welcome.</p>} */}
         </div>
       </article>

@@ -18,7 +18,8 @@ function Matchmaker() {
   const navigate = useNavigate();
   const [status, setStatus] = useState(STATUS.IDLE);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isJoining, setIsJoining] = useState(false); // Separate state for joining
+  const [isLeaving, setIsLeaving] = useState(false); // Separate state for leaving
   
   const logout = () => {
     signOut(auth).then(() => {
@@ -73,7 +74,7 @@ function Matchmaker() {
       handleError('User not authenticated');
       return;
     }
-    setIsLoading(true);
+    setIsJoining(true);
     setStatus(STATUS.WAITING);
     try {
       const response = await fetch(`${API_URL}/matchmaking/join`, {
@@ -89,7 +90,7 @@ function Matchmaker() {
     } catch (err) {
       handleError(`Error joining queue: ${err.message}`);
     } finally {
-      setIsLoading(false);
+      setIsJoining(false);
     }
   };
 
@@ -98,7 +99,7 @@ function Matchmaker() {
       handleError('User not authenticated');
       return;
     }
-    setIsLoading(true);
+    setIsLeaving(true); // Use isLeaving here
     try {
       await fetch(`${API_URL}/matchmaking/leave`, {
         method: 'POST',
@@ -109,7 +110,7 @@ function Matchmaker() {
     } catch (err) {
       handleError(`Error leaving queue: ${err.message}`);
     } finally {
-      setIsLoading(false);
+      setIsLeaving(false); // Reset isLeaving here
     }
   };
 
@@ -120,14 +121,14 @@ function Matchmaker() {
   return (
     <div className="matchmaker-container">
       {status === STATUS.IDLE ? (
-        <button className="matchmaker-button" onClick={startMatchmaking} disabled={isLoading}>
-          {isLoading ? 'Finding Partner...' : 'Find Partner'}
+        <button className="matchmaker-button" onClick={startMatchmaking} disabled={isJoining}>
+          {isJoining ? 'Finding Partner...' : 'Find Partner'}
         </button>
       ) : status === STATUS.WAITING ? (
         <>
           <p>Waiting for a partner...You're in the queue!</p>
-          <button className="matchmaker-button secondary-button" onClick={leaveQueue} disabled={isLoading}>
-            {isLoading ? 'Leaving Queue...' : 'Leave Queue'}
+          <button className="matchmaker-button secondary-button" onClick={leaveQueue} disabled={isLeaving}>
+            {isLeaving ? 'Leaving Queue...' : 'Leave Queue'}
           </button>
         </>
       ) : (
