@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { getAuth, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithRedirect/* , signInWithPopup */ } from 'firebase/auth';
 import {Button} from 'react-bootstrap';
 
 const GoogleSignIn = () => {
@@ -10,7 +10,7 @@ const GoogleSignIn = () => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    const ua = navigator.userAgent || window.opera;
     setIsInAppBrowser(
       ua.indexOf("FBAN") > -1 || 
       ua.indexOf("FBAV") > -1 || 
@@ -110,6 +110,7 @@ const GoogleSignIn = () => {
           </Button>
           <Button
             onClick={openInBrowser}
+            style={{marginLeft:"2px"}}
           >
             Open in Browser
           </Button>

@@ -199,7 +199,7 @@ function  Room() {
   return (
     <>
       <header>
-        <h4 style={{fontFamily:'ubuntumono', fontWeight:"800", color:'#007BFF'}} id="groupName">Incoglingo</h4>
+        <h4 style={{fontFamily:'Ubuntu Mono', fontWeight:"800", color:'#007BFF'}} id="groupName">Incoglingo</h4>
       </header>
       <div className="tabs">
       {isMobile ? (

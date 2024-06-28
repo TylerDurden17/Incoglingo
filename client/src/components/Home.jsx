@@ -30,7 +30,7 @@ function Home() {
           <article style={{ display: "grid", gridTemplateRows: "auto auto", gridRowGap: "10px", alignItems: "center", marginBottom: "10px" }}>
           <header style={{textAlign: "center"}}>
         <br/>
-        <div style={{fontFamily:'ubuntumono', fontSize:'3em', color:'#007BFF'}}>Incoglingo</div>
+        <div style={{fontFamily:'Ubuntu Mono', fontSize:'3em', color:'#007BFF'}}>Incoglingo</div>
         
       </header>
 <section>

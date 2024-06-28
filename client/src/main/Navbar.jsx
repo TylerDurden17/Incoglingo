@@ -36,7 +36,7 @@ export default function Navbar() {
     <>
       <nav className="nav">
         <div style={{display:"flex", margin:'5px'}}>
-        <Link style={{fontFamily:'ubuntumono', fontWeight:"800", color:'#007BFF'}} to="/home" className="site-title">incoglingo
+        <Link style={{fontFamily:'Ubuntu Mono', fontWeight:"800", color:'#007BFF'}} to="/home" className="site-title">incoglingo
         </Link></div>
         
         <ul>
